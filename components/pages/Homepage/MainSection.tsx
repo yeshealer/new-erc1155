@@ -41,7 +41,7 @@ export default function MainSection() {
                     <p className={`text-black font-semibold text-2xl md:text-3xl`}>Supported By</p>
                     <Stack direction='row' alignItems='center' justifyContent='center' flexWrap='wrap' className='gap-x-8'>
                         {SupportNetworkIcons.map(item => (
-                            <img src={item} alt="network" width="40" height="40" draggable={false} />
+                            <img src={item} alt="network" width="40" height="40" draggable={false} key={item} />
                         ))}
                     </Stack>
                 </Stack>

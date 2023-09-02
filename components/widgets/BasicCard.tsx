@@ -32,7 +32,7 @@ export default function BasicCard({
                     <div className='text-sky-500'>Deployed on</div>
                     <div className='flex items-center gap-2 flex-wrap'>
                         {imageList.map(item => (
-                            <Image src={item} alt='network image' width={20} height={20} draggable={false} />
+                            <Image src={item} alt='network image' width={20} height={20} draggable={false} key={item} />
                         ))}
                     </div>
                 </div>

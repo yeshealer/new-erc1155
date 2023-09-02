@@ -2,7 +2,6 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Sen } from 'next/font/google'
 import WagmiProvider from './WagmiProvider'
-import { SnackbarProvider } from 'notistack';
 
 const sen = Sen({ subsets: ['latin'] })
 
@@ -20,9 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="light">
       <WagmiProvider>
-        <SnackbarProvider maxSnack={3}>
           <body className={sen.className}>{children}</body>
-        </SnackbarProvider>
       </WagmiProvider>
     </html>
   )

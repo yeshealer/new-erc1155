@@ -68,7 +68,7 @@ function Header() {
                 <Stack direction='row' alignItems='center' gap={6}>
                     <Stack alignItems='center' direction='row' gap={6} className='hidden md:flex'>
                         {HeaderLink.map((item, index) => (
-                            <Link href={`/${item.link}`} className={selectedTab === (index + 1) ? `font-semibold text-sky-500 text-lg header-activate` : `font-medium text-gray-950/80`} onClick={() => handleSelectTab(index + 1)}>{item.title}</Link>
+                            <Link key={item.link} href={`/${item.link}`} className={selectedTab === (index + 1) ? `font-semibold text-sky-500 text-lg header-activate` : `font-medium text-gray-950/80`} onClick={() => handleSelectTab(index + 1)}>{item.title}</Link>
                         ))}
                     </Stack>
                     <Stack alignItems='center' direction='row' gap={2}>

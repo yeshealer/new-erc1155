@@ -74,6 +74,7 @@ export default function MainSection() {
                                         title={item.data.collectionName}
                                         imageList={networkImgList}
                                         collectionID={item.data.id}
+                                        key={item.data.id}
                                     />
                                 )
                             }

@@ -154,7 +154,7 @@ export default function MainSection() {
                                 {NetworkList.map((item) => {
                                     const isDeployed = collectionData.deployedNetwork.includes(item.id);
                                     return (
-                                        <div className='w-full'>
+                                        <div className='w-full' key={item.id}>
                                             <div className="mockup-window border border-base-300">
                                                 <div className="flex flex-col px-6 py-4 pb-2 border-t border-base-300">
                                                     <div className='flex items-center justify-between w-full'>

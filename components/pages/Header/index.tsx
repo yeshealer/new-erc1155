@@ -13,6 +13,7 @@ import { Web3Button } from '@web3modal/react'
 // ** components imports
 import { HeaderLink } from '@/constants/main'
 import { IconButton } from '@/components/globalstyle';
+import { useTheme } from '@mui/material';
 
 function Header() {
     const router = useRouter();
@@ -20,6 +21,7 @@ function Header() {
     const linkName = pathname.slice(1, pathname.length);
     const { address, isConnected } = useAccount();
     const isSM = useMediaQuery('(min-width: 500px)');
+    const isTablet = useMediaQuery('(max-width: 768px)');
 
     const [selectedTab, setSelectedTab] = useState<number>(1);
     const [openDrawer, setOpenDrawer] = useState(false);
@@ -66,11 +68,11 @@ function Header() {
                     </Link>
                 </Stack>
                 <Stack direction='row' alignItems='center' gap={6}>
-                    <Stack alignItems='center' direction='row' gap={6} className='hidden md:flex'>
+                    {!isTablet && <Stack alignItems='center' direction='row' gap={6}>
                         {HeaderLink.map((item, index) => (
                             <Link key={item.link} href={`/${item.link}`} className={selectedTab === (index + 1) ? `font-semibold text-sky-500 text-lg header-activate` : `font-medium text-gray-950/80`} onClick={() => handleSelectTab(index + 1)}>{item.title}</Link>
                         ))}
-                    </Stack>
+                    </Stack>}
                     <Stack alignItems='center' direction='row' gap={2}>
                         {walletConnected && <IconButton onClick={() => router.push(`/${address}`)}><Icon icon="ph:user-duotone" fontSize={20} /></IconButton>}
                         <Web3Button balance={isSM ? 'show' : 'hide'} />

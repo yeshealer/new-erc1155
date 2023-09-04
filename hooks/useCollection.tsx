@@ -20,7 +20,7 @@ const useCollection = () => {
             const collectionReference = collectionDB.collection("CollectionData");
             const data = await collectionReference.get();
             const collection = data.data.find((item) => item.data.id === pathname) as any;
-            return collection.data
+            return collection?.data
         }
     }, [])
 
@@ -46,7 +46,8 @@ const useCollection = () => {
                 collectionData.recipientAddress,
                 collectionData.recipientPercentage,
                 collectionData.isPublic
-            ]
+            ],
+            chainId: chainID
         }).then(res => {
             const handleNextAction = async () => {
                 if (!res.hash) return;

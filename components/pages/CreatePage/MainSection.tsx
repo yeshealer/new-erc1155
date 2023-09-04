@@ -13,8 +13,6 @@ import BasicCard from "@/components/widgets/BasicCard";
 import { getCollectionDB } from "@/utils/polybaseHelper";
 // ** web3 imports
 import { useAccount } from "wagmi";
-import { ethPersonalSign } from '@polybase/eth'
-import { Polybase } from "@polybase/client"
 
 export default function MainSection() {
     const router = useRouter();

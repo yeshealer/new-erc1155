@@ -33,7 +33,7 @@ export default function MainSection() {
 
     const pathname = location.pathname.slice(8, location.pathname.length);
 
-    const handleDeploy = async (collectionInfo: any) => {
+    const handleDeploy = async (collectionInfo: any, chainID: number) => {
         await deploy(collectionInfo, chainID, pathname, setCollectionInfo);
     }
 
@@ -72,7 +72,7 @@ export default function MainSection() {
                 </Stack>
             ) : (
                 <Stack className="max-w-7xl w-full relative">
-                    <div className="w-full flex items-center justify-between ">
+                    <div className="w-full flex items-center justify-between">
                         <IconButton
                             onClick={() => router.push('/create')}
                             className="absolute left-0"
@@ -114,7 +114,7 @@ export default function MainSection() {
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <button className={`btn btn-xs btn-block btn-primary btn-outline mt-2`} onClick={() => switchNetwork?.(item.id)}>
+                                                        <button className={`btn btn-xs btn-block btn-info btn-outline mt-2`} onClick={() => switchNetwork?.(item.id)}>
                                                             {switching && <span className="loading loading-spinner"></span>}
                                                             {switching ? '' : 'Switch Network'}
                                                         </button>
@@ -128,7 +128,7 @@ export default function MainSection() {
                                                             <Icon icon="tabler:external-link" fontSize={18} />
                                                         </button>
                                                     ) : (
-                                                        <button disabled={item.id !== chainID} className="btn btn-sm btn-block btn-info text-white" onClick={async () => await handleDeploy(collectionInfo)}>Deploy</button>
+                                                        <button className="btn btn-sm btn-block btn-info text-white" onClick={async () => await handleDeploy(collectionInfo, item.id)}>Deploy</button>
                                                     )}
                                                 </div>
                                             </div>

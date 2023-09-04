@@ -25,6 +25,7 @@ export default function MainSection() {
     const [collectionSymbol, setCollectionSymbol] = useState('');
     const [maxSupply, setMaxSupply] = useState<string>('0');
     const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [isPublic, setIsPublic] = useState(true);
     const [price, setPrice] = useState<string>('0');
     const [recipient, setRecipient] = useState('');
@@ -43,7 +44,7 @@ export default function MainSection() {
             } else if (Number(percentage) > 50) {
                 enqueueSnackbar("Percentage can't be greater than 50%", { variant: errorVariant });
             } else {
-                setIsLoading(true)
+                setIsSaving(true)
                 await CollectionDB.applySchema(`
                     @public
                     collection NFTData {
@@ -152,7 +153,7 @@ export default function MainSection() {
                     '',
                     isPublic
                 ]);
-                setIsLoading(false)
+                setIsSaving(false)
                 enqueueSnackbar("Saved collection successfully!", { variant: successVariant });
                 // router.push('/create');
             }
@@ -161,7 +162,7 @@ export default function MainSection() {
             if (err.code === 'already-exists') {
                 enqueueSnackbar("Collection name already exists!", { variant: warningVariant });
             }
-            setIsLoading(false)
+            setIsSaving(false)
         }
     }
 
@@ -174,6 +175,15 @@ export default function MainSection() {
                     sx={{ minHeight: 'calc(100vh - 100px)' }}
                 >
                     <CircularProgress />
+                </Stack>
+            ) : isSaving ? (
+                <Stack
+                    justifyContent='center'
+                    alignItems='center'
+                    sx={{ minHeight: 'calc(100vh - 100px)' }}
+                >
+                    <span className="loading loading-infinity w-32 text-info"></span>
+                    <div className='text-sky-500 font-bold text-2xl'>Saving...</div>
                 </Stack>
             ) : (
                 <Stack className="max-w-7xl w-full relative">

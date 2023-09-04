@@ -27,16 +27,12 @@ export default function BasicCard({
         <Card sx={{ minWidth: 300 }} className='border border-sky-500 border-b-0 bg-gradient-to-t from-sky-50 via-sky-100 to-sky-200'>
             <CardContent>
                 <div className='text-gray-500 text-xs'>{symbol}</div>
-                <div className='text-2xl font-semibold'>{title}</div>
+                <div className='text-2xl font-semibold mt-3'>{title}</div>
                 <div className='flex items-center gap-2'>
                     <div className='text-sky-500'>Deployed on</div>
                     <div className='flex items-center gap-2 flex-wrap'>
                         {imageList.map(item => (
-                            <div className="avatar online">
-                                <div className="rounded-full w-6 bg-sky-400/50 p-0.5 border border-sky-500">
-                                    <Image src={item} alt='network image' width={20} height={20} draggable={false} key={item} />
-                                </div>
-                            </div>
+                            <Image src={item} alt='network image' width={20} height={20} draggable={false} key={item} />
                         ))}
                     </div>
                 </div>

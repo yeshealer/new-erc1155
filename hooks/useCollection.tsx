@@ -1,14 +1,17 @@
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { writeContract, waitForTransaction, readContract } from '@wagmi/core'
 import { ethers } from "ethers";
+import { useSnackbar } from 'notistack';
 import { getCollectionDB } from "@/utils/polybaseHelper";
 import SampModelFactoryABI from '@/constants/abi/SampModelFactory.json'
+import { errorVariant, successVariant, warningVariant } from "@/utils/stickyHelper";
 
 const useCollection = () => {
     const factoryContract = process.env.FACTORY_CONTRACT as `0x${string}`
     const referContract = process.env.REFER_CONTRACT as `0x${string}`
 
     const collectionDB = getCollectionDB();
+    const { enqueueSnackbar } = useSnackbar();
 
     const [isDeploying, setIsDeploying] = useState(false);
 
@@ -52,13 +55,16 @@ const useCollection = () => {
                 if (result.status === 'success') {
                     const result = await saveCollectionDB(collectionData, chainID, pathname);
                     setCollectionInfo(result)
+                    setIsDeploying(false)
+                    enqueueSnackbar('Successfully deployed collection!', { variant: successVariant });
                 }
             }
             handleNextAction();
         }).catch(err => {
             console.log(err)
+            enqueueSnackbar('Deploy has been failed!', { variant: errorVariant });
+            setIsDeploying(false)
         })
-        setIsDeploying(false)
     }, [])
 
     const saveCollectionDB = async (collectionInfo: any, chainID: number, pathname: string) => {

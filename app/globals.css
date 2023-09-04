@@ -18,7 +18,7 @@
 
 @font-face {
   font-family: 'Sens';
-  src: url(/public/assets/fonts/Sen-Regular.ttf);
+  src: url('/public/assets/fonts/Sen-Regular.ttf');
 }
 
 body {

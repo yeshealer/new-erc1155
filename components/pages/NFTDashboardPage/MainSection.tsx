@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import useNetwork from '@/hooks/useNetwork';
 import useCollection from '@/hooks/useCollection';
 import { useAccount } from 'wagmi';
+import { Player } from '@lottiefiles/react-lottie-player';
 import { NetworkList } from '@/constants/main';
 
 export default function MainSection() {
@@ -14,10 +15,12 @@ export default function MainSection() {
     const { address } = useAccount();
     const {
         getCollectionData,
+        getNFTData
     } = useCollection();
 
     const [isLoading, setIsLoading] = useState(false);
     const [collectionInfo, setCollectionInfo] = useState<any>();
+    const [nftInfo, setNFTInfo] = useState<any>();
 
     const pathname = location.pathname.slice(5, location.pathname.length);
 
@@ -26,7 +29,9 @@ export default function MainSection() {
             try {
                 setIsLoading(true)
                 const collection = await getCollectionData(pathname);
-                setCollectionInfo(collection)
+                const nft = await getNFTData(collection);
+                setCollectionInfo(collection);
+                setNFTInfo(nft);
                 setIsLoading(false)
             } catch (err) {
                 console.log(err)
@@ -58,39 +63,66 @@ export default function MainSection() {
                     </Stack>
                     <div className='divider' />
                     {collectionInfo && (
-                        <Stack className='w-full' direction='row' gap={4} flexWrap='wrap'>
-                            <Stack justifyContent='space-between' gap={1.5}>
-                                <div className='badge badge-info text-white'>Collection Name</div>
-                                <div className='text-2xl font-semibold'>{collectionInfo.collectionName}</div>
+                        <Stack className='w-full' direction='row' justifyContent='space-between' alignItems='center'>
+                            <Stack className='w-full' direction='row' gap={4} flexWrap='wrap'>
+                                <Stack justifyContent='space-between' gap={1.5}>
+                                    <div className='badge badge-info text-white'>Collection Name</div>
+                                    <div className='text-2xl font-semibold'>{collectionInfo.collectionName}</div>
+                                </Stack>
+                                <Stack justifyContent='space-between' gap={1.5}>
+                                    <div className='badge badge-info text-white'>Deployed on</div>
+                                    {(collectionInfo.deployedNetwork.length > 0) ? (
+                                        <Stack direction={'row'} className='h-max' alignItems='center'>
+                                            {collectionInfo.deployedNetwork.map((networkId: number) => {
+                                                return (
+                                                    <img src={NetworkList.find((network: any) => network.id === networkId)?.image} alt="network icon" width={24} height={24} className="mr-2 h-max" draggable={false} />
+                                                )
+                                            })}
+                                            {collectionInfo.wallet === address && (
+                                                <IconButton
+                                                    onClick={() => router.push(`/deploy/${collectionInfo.id}`)}
+                                                    className="p-1.5"
+                                                >
+                                                    <Icon icon="ic:round-plus" fontSize={18} />
+                                                </IconButton>
+                                            )}
+                                        </Stack>
+                                    ) : (collectionInfo.wallet === address) ? (
+                                        <button className={`btn btn-xs btn-info btn-outline`} onClick={() => router.push(`/deploy/${collectionInfo.id}`)}>
+                                            DEPLOY
+                                        </button>
+                                    ) : (
+                                        '-----'
+                                    )}
+                                </Stack>
                             </Stack>
-                            <Stack justifyContent='space-between' gap={1.5}>
-                                <div className='badge badge-info text-white'>Deployed on</div>
-                                {(collectionInfo.deployedNetwork.length > 0) ? (
-                                    <Stack direction={'row'} className='h-max' alignItems='center'>
-                                        {collectionInfo.deployedNetwork.map((networkId: number) => {
-                                            return (
-                                                <img src={NetworkList.find((network: any) => network.id === networkId)?.image} alt="network icon" width={24} height={24} className="mr-2 h-max" draggable={false} />
-                                            )
-                                        })}
-                                        {collectionInfo.wallet === address && (
-                                            <IconButton
-                                                onClick={() => router.push(`/deploy/${collectionInfo.id}`)}
-                                                className="p-1.5"
-                                            >
-                                                <Icon icon="ic:round-plus" fontSize={18} />
-                                            </IconButton>
-                                        )}
-                                    </Stack>
-                                ) : (collectionInfo.wallet === address) ? (
-                                    <button className={`btn btn-xs btn-info btn-outline`} onClick={() => router.push(`/deploy/${collectionInfo.id}`)}>
-                                        DEPLOY
-                                    </button>
-                                ) : (
-                                    '-----'
-                                )}
-                            </Stack>
+                            {(collectionInfo.deployedNetwork.length > 0) && (
+                                <button className={`btn btn-info text-white`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
+                                    Create NFT
+                                </button>
+                            )}
                         </Stack>
                     )}
+                    <div className='divider'>NFT details</div>
+                    <Stack>
+                        {(nftInfo && nftInfo.length === 0) ? (
+                            <Stack alignItems='center' mt={5}>
+                                <Player
+                                    autoplay
+                                    loop
+                                    src="https://lottie.host/4d0014a5-649e-4016-83b0-3b7bedf37631/vIBTlHnxhn.json"
+                                    style={{ height: '320px', width: '320px' }}
+                                />
+                                <button className={`btn btn-info text-white`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
+                                    Create NFT
+                                </button>
+                            </Stack>
+                        ) : (
+                            <Stack>
+
+                            </Stack>
+                        )}
+                    </Stack>
                 </Stack>
             )}
         </Stack>

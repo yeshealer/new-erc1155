@@ -4,7 +4,9 @@ import { ethers } from "ethers";
 import { useSnackbar } from 'notistack';
 import { getCollectionDB } from "@/utils/polybaseHelper";
 import SampModelFactoryABI from '@/constants/abi/SampModelFactory.json'
-import { errorVariant, successVariant, warningVariant } from "@/utils/stickyHelper";
+import { errorVariant, successVariant } from "@/utils/stickyHelper";
+import useIPFS from "./useIPFS";
+import { NetworkList } from "@/constants/main";
 
 const useCollection = () => {
     const factoryContract = process.env.FACTORY_CONTRACT as `0x${string}`
@@ -12,6 +14,7 @@ const useCollection = () => {
 
     const collectionDB = getCollectionDB();
     const { enqueueSnackbar } = useSnackbar();
+    const { get3DImageLink } = useIPFS();
 
     const [isDeploying, setIsDeploying] = useState(false);
 
@@ -21,6 +24,32 @@ const useCollection = () => {
             const data = await collectionReference.get();
             const collection = data.data.find((item) => item.data.id === pathname) as any;
             return collection?.data
+        }
+    }, [])
+
+    const getNFTData = useCallback(async (collection: any) => {
+        if (collectionDB) {
+            console.log(collection)
+            const nftData = await (collectionDB.collection('NFTData')).get();
+            const NFTs = nftData.data.filter((item) => item.data.collectionId === collection.data.id)
+            let displayNFTData = []
+            for (let i = 0; i < NFTs.length; i++) {
+                const imageURL = await get3DImageLink(NFTs[i].data.imageURI)
+                displayNFTData.push({
+                    imageURL: imageURL,
+                    networkImage: NetworkList.find(network => network.id === NFTs[i].data.network)?.image,
+                    nftName: NFTs[i].data.name,
+                    nftDescription: NFTs[i].data.description,
+                    contractAddress: NFTs[i].data.contractAddress,
+                    ownerAddress: NFTs[i].data.ownerAddress,
+                    symbol: NFTs[i].data.symbol,
+                    lastSynced: NFTs[i].data.lastSynced,
+                    tokenId: NFTs[i].data.tokenId,
+                    network: NFTs[i].data.network,
+                    supply: NFTs[i].data.supply
+                })
+            }
+            return displayNFTData;
         }
     }, [])
 
@@ -90,7 +119,8 @@ const useCollection = () => {
         isDeploying,
         getCollectionData,
         deploy,
-        saveCollectionDB
+        saveCollectionDB,
+        getNFTData
     }
 }
 

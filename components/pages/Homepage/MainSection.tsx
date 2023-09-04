@@ -1,6 +1,7 @@
 // ** React imports
 import React from 'react'
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 // ** constants && style imports
 import { SupportNetworkIcons } from '@/constants/main';
 import { HomeMainBtn } from './style';
@@ -17,24 +18,28 @@ export default function MainSection() {
                 <Stack alignItems='center' gap={5} className='w-full'>
                     <p className={`text-black text-xl md:text-2xl w-full md:w-4/5 text-center font-medium`}>Limited edition interoperable 3D avatars that can be used across a variety of different virtual worlds</p>
                     <div className='w-full flex flex-col md:flex-row items-center justify-center gap-10'>
-                        <HomeMainBtn onClick={() => router.push('/create')}>
-                            <Player
-                                autoplay
-                                loop
-                                src="/assets/lottie/collection.json"
-                                style={{ height: '300px', width: '300px', position: 'absolute', top: '50%', left: '50%', opacity: .3, transform: 'translate(-50%, -50%)' }}
-                            />
-                            <div className='z-10'>Collection</div>
-                        </HomeMainBtn>
-                        <HomeMainBtn onClick={() => router.push('/drop')}>
-                            <Player
-                                autoplay
-                                loop
-                                src="/assets/lottie/drop.json"
-                                style={{ height: '200px', width: '200px', position: 'absolute', top: '45%', left: '50%', opacity: .4, transform: 'translate(-50%, -50%)' }}
-                            />
-                            <div className='z-10'>NFT Drop</div>
-                        </HomeMainBtn>
+                        <Link className='w-full lg:w-1/3 md:w-1/2' href={'/create'}>
+                            <HomeMainBtn>
+                                <Player
+                                    autoplay
+                                    loop
+                                    src="/assets/lottie/collection.json"
+                                    style={{ height: '300px', width: '300px', position: 'absolute', top: '50%', left: '50%', opacity: .3, transform: 'translate(-50%, -50%)' }}
+                                />
+                                <div className='z-10'>Collection</div>
+                            </HomeMainBtn>
+                        </Link>
+                        <Link className='w-full lg:w-1/3 md:w-1/2' href={'/drop'}>
+                            <HomeMainBtn>
+                                <Player
+                                    autoplay
+                                    loop
+                                    src="/assets/lottie/drop.json"
+                                    style={{ height: '200px', width: '200px', position: 'absolute', top: '45%', left: '50%', opacity: .4, transform: 'translate(-50%, -50%)' }}
+                                />
+                                <div className='z-10'>NFT Drop</div>
+                            </HomeMainBtn>
+                        </Link>
                     </div>
                 </Stack>
                 <Stack alignItems='center' gap={2} className={`my-5 md:mt-20 max-w-md w-full`}>

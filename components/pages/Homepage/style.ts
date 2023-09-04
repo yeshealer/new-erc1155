@@ -5,8 +5,6 @@ export const HomeMainBtn = tw.button`
     overflow-hidden 
     h-48 
     w-full
-    lg:w-1/3
-    md:w-1/2
     text-3xl 
     font-semibold 
     rounded-3xl

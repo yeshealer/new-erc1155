@@ -13,7 +13,7 @@ export const getCollectionDB = () => {
                 sig: ethPersonalSign(privateKey as string, data)
             }
         },
-        defaultNamespace: `pk/${publicKey}/collectiondata66`,
+        defaultNamespace: `pk/${publicKey}/collectiondata67`,
         baseURL: `${BASE_URL}/v0`
     })
     return db

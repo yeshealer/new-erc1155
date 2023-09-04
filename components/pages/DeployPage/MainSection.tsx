@@ -90,7 +90,7 @@ export default function MainSection() {
                                 <p className='text-gray-500 text-sm'>Select a network to deploy your collection. Deploying your collection on each network is required to bridge NFTs between those networks.</p>
                             </div>
                             <div className='divider'>Deploy on the network</div>
-                            <div className='flex items-start justify-between gap-10'>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-start justify-between gap-5 pb-10'>
                                 {NetworkList.map((item) => {
                                     const isDeployed = collectionInfo.deployedNetwork.includes(item.id);
                                     return (

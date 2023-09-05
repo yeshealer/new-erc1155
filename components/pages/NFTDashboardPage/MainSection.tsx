@@ -75,7 +75,7 @@ export default function MainSection() {
                                         <Stack direction={'row'} className='h-max' alignItems='center'>
                                             {collectionInfo.deployedNetwork.map((networkId: number) => {
                                                 return (
-                                                    <img src={NetworkList.find((network: any) => network.id === networkId)?.image} alt="network icon" width={24} height={24} className="mr-2 h-max" draggable={false} />
+                                                    <img src={NetworkList.find((network: any) => network.id === networkId)?.image} alt="network icon" width={24} height={24} className="mr-2 h-max" draggable={false} key={networkId} />
                                                 )
                                             })}
                                             {collectionInfo.wallet === address && (

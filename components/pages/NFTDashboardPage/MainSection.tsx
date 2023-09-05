@@ -113,9 +113,11 @@ export default function MainSection() {
                                     src="https://lottie.host/4d0014a5-649e-4016-83b0-3b7bedf37631/vIBTlHnxhn.json"
                                     style={{ height: '320px', width: '320px' }}
                                 />
-                                <button className={`btn btn-info text-white`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
-                                    Create NFT
-                                </button>
+                                {(collectionInfo && collectionInfo.deployedNetwork.length > 0) && (
+                                    <button className={`btn btn-info text-white`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
+                                        Create NFT
+                                    </button>
+                                )}
                             </Stack>
                         ) : (
                             <Stack>

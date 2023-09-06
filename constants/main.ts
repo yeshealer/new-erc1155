@@ -1,3 +1,5 @@
+import { metaDataTypes } from "./type";
+
 export const HeaderLink = [
     { title: 'Create', link: '' },
     { title: 'Bridge', link: 'bridge' },
@@ -38,3 +40,15 @@ export const NetworkList = [
         dstChainId: 10106
     },
 ]
+
+export const metaDataOptions: metaDataTypes[] = [
+    { label: "Metus malesuada", value: '0', checked: false },
+    { label: "ASH SUUJ", value: '1', checked: false },
+    { label: "Tincidunt vel", value: '2', checked: false },
+    { label: "Massa suspendisse", value: '3', checked: false },
+    { label: "Tempor tempus", value: '4', checked: false },
+    { label: "Neque cras", value: '5', checked: false },
+    { label: "Congue cras", value: '6', checked: false },
+    { label: "Urna mi", value: '7', checked: false },
+    { label: "Eget lectus", value: '8', checked: false }
+];

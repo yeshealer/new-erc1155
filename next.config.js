@@ -5,7 +5,9 @@ const nextConfig = {
         POLYBASE_PUBLIC_KEY: process.env.POLYBASE_PUBLIC_KEY,
         POLYBASE_PRIVATE_KEY: process.env.POLYBASE_PRIVATE_KEY,
         FACTORY_CONTRACT: process.env.FACTORY_CONTRACT,
-        REFER_CONTRACT: process.env.REFER_CONTRACT
+        REFER_CONTRACT: process.env.REFER_CONTRACT,
+        PINATA_API_KEY: process.env.PINATA_API_KEY,
+        PINATA_API_SECRET: process.env.PINATA_API_SECRET
     },
     images: {
         remotePatterns: [

@@ -25,6 +25,7 @@
     "@web3modal/ethereum": "^2.7.1",
     "@web3modal/react": "^2.7.1",
     "autoprefixer": "10.4.15",
+    "axios": "^1.5.0",
     "crypto-js": "^4.1.1",
     "daisyui": "^3.6.4",
     "eslint": "8.48.0",

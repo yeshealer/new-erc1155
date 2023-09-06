@@ -174,7 +174,7 @@ export default function MainSection() {
                     alignItems='center'
                     sx={{ minHeight: 'calc(100vh - 100px)' }}
                 >
-                    <CircularProgress />
+                    <span className="loading loading-bars loading-lg text-info"></span>
                 </Stack>
             ) : isSaving ? (
                 <Stack
@@ -282,7 +282,6 @@ export default function MainSection() {
                     </div>
 
                     <Button className="w-full my-5 justify-center" onClick={createCollection}>Save</Button>
-                    {/* <ToastContainer position="top-right" autoClose={3000} /> */}
                 </Stack>
             )}
         </Stack >

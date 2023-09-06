@@ -9,12 +9,12 @@ export const IconButton = tw.button`
     hover:bg-sky-400
     text-white 
     p-2.5
-    rounded-full
+    rounded-lg
     transition-all
 `
 
 export const Button = tw.button<{ outlined?: boolean, size?: string }>`
-    rounded-full
+    rounded-lg
     transition-all
     flex
     items-center

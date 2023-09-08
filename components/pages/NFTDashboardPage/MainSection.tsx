@@ -141,7 +141,7 @@ export default function MainSection() {
                             <Stack direction='row' justifyContent='space-between' flexWrap='wrap' gap={4}>
                                 {nftInfo.map((item: any) => {
                                     return (
-                                        <div className="card card-compact w-96 bg-base-100 shadow-xl">
+                                        <div className="card card-compact w-96 bg-base-100 shadow-xl" key={item.nftName + item.tokenId}>
                                             <figure className='relative'>
                                                 <ModelViewer prevURL={item.imageURL} />
                                                 <div className="badge badge-info badge-lg text-white font-semibold absolute left-2 top-2">

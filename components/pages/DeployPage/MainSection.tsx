@@ -11,15 +11,16 @@ import { NetworkList } from '@/constants/main';
 import { useAccount, useBalance, useSwitchNetwork, useNetwork } from 'wagmi';
 // ** utils & provider & abis
 import useCollection from '@/hooks/useCollection';
+import { useWeb3Modal } from '@web3modal/react';
 
 export default function MainSection() {
-
     const [isLoading, setIsLoading] = useState(false);
     const [collectionInfo, setCollectionInfo] = useState<any>();
 
+    const { open } = useWeb3Modal();
     const router = useRouter();
     const { chain } = useNetwork();
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const { data: balance } = useBalance({
         address: address,
     })
@@ -121,7 +122,9 @@ export default function MainSection() {
                                                 </div>
                                                 <div className='divider my-0' />
                                                 <div className='px-6 py-2 pt-0'>
-                                                    {isDeployed ? (
+                                                    {!isConnected ? (
+                                                        <button className="btn btn-sm btn-block btn-info text-white" onClick={open}>Connect Wallet</button>
+                                                    ) : isDeployed ? (
                                                         <button className="btn btn-sm btn-block btn-accent text-white" onClick={() => window.open(`${NetworkList.find(network => network.id === item.id)?.explorer}${collectionInfo.deployedAddress}`)}>
                                                             {collectionInfo.deployedAddress.slice(0, 5) + '...' + collectionInfo.deployedAddress.slice(-5)}
                                                             <Icon icon="tabler:external-link" fontSize={18} />

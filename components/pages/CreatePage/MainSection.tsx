@@ -17,7 +17,7 @@ import { useAccount } from "wagmi";
 export default function MainSection() {
     const router = useRouter();
     const CollectionDB = getCollectionDB();
-    const { address, isConnected } = useAccount();
+    const { address } = useAccount();
 
     const [isLoading, setIsLoading] = useState(true);
     const [collectionData, setCollectionData] = useState<any>();
@@ -62,7 +62,7 @@ export default function MainSection() {
                         </Button>
                     </Stack >
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full justify-center py-3">
-                        {isConnected && collectionData && collectionData.data.map((item: any) => {
+                        {collectionData && collectionData.data.map((item: any) => {
                             if (item.data.isPublic || item.data.wallet === address) {
                                 const deployedNetworksList = item.data.deployedNetwork;
                                 const networkImgList = deployedNetworksList.map((item: number) => NetworkList.find(network => network.id === item)?.image)

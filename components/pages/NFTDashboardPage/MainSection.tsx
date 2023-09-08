@@ -1,44 +1,62 @@
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Stack from '@mui/material/Stack'
 import { IconButton } from '@/components/globalstyle';
 import { Icon } from '@iconify/react';
-import useNetwork from '@/hooks/useNetwork';
+// import useNetwork from '@/hooks/useNetwork';
 import useCollection from '@/hooks/useCollection';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { NetworkList } from '@/constants/main';
+import ModelViewer from '@/components/widgets/ModelViewer';
 
 export default function MainSection() {
     const router = useRouter();
-    const { chainID } = useNetwork();
+    const { chain } = useNetwork();
     const { address } = useAccount();
     const {
         getCollectionData,
         getNFTData
     } = useCollection();
+    const pathname = usePathname();
 
     const [isLoading, setIsLoading] = useState(false);
     const [collectionInfo, setCollectionInfo] = useState<any>();
     const [nftInfo, setNFTInfo] = useState<any>();
 
-    const pathname = location.pathname.slice(5, location.pathname.length);
+    const pathName = pathname.slice(5, pathname.length)
+
+    const handleCopyAddress = (address: string) => {
+        navigator.clipboard.writeText(address)
+    }
 
     useEffect(() => {
         (async () => {
             try {
                 setIsLoading(true)
-                const collection = await getCollectionData(pathname);
-                const nft = await getNFTData(collection);
+                const collection = await getCollectionData(pathName);
                 setCollectionInfo(collection);
-                setNFTInfo(nft);
-                setIsLoading(false)
             } catch (err) {
                 console.log(err)
                 setIsLoading(false)
             }
         })()
-    }, [chainID])
+    }, [chain?.id])
+
+    useEffect(() => {
+        if (collectionInfo) {
+            (async () => {
+                try {
+                    setIsLoading(true)
+                    const nft = await getNFTData(collectionInfo);
+                    setNFTInfo(nft);
+                    setIsLoading(false)
+                } catch (err) {
+                    console.log(err)
+                }
+            })()
+        }
+    }, [collectionInfo])
 
     return (
         <Stack direction='row' alignItems='center' justifyContent='center' className="px-3">
@@ -96,7 +114,7 @@ export default function MainSection() {
                                     )}
                                 </Stack>
                             </Stack>
-                            {(collectionInfo.deployedNetwork.length > 0) && (
+                            {(collectionInfo.deployedNetwork.length > 0 && collectionInfo.deployedNetwork.includes(chain?.id)) && (
                                 <button className={`btn btn-info text-white`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
                                     Create NFT
                                 </button>
@@ -113,15 +131,64 @@ export default function MainSection() {
                                     src="https://lottie.host/4d0014a5-649e-4016-83b0-3b7bedf37631/vIBTlHnxhn.json"
                                     style={{ height: '320px', width: '320px' }}
                                 />
-                                {(collectionInfo && collectionInfo.deployedNetwork.length > 0) && (
+                                {(collectionInfo && collectionInfo.deployedNetwork.length > 0 && collectionInfo.deployedNetwork.includes(chain?.id)) && (
                                     <button className={`btn btn-info text-white`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
                                         Create NFT
                                     </button>
                                 )}
                             </Stack>
-                        ) : (
-                            <Stack>
-
+                        ) : (nftInfo && nftInfo.length > 0) && (
+                            <Stack direction='row' justifyContent='space-between' flexWrap='wrap' gap={4}>
+                                {nftInfo.map((item: any) => {
+                                    return (
+                                        <div className="card card-compact w-96 bg-base-100 shadow-xl">
+                                            <figure className='relative'>
+                                                <ModelViewer prevURL={item.imageURL} />
+                                                <div className="badge badge-info badge-lg text-white font-semibold absolute left-2 top-2">
+                                                    {item.nftName} #{item.tokenId}
+                                                </div>
+                                                <div className="badge badge-sm absolute right-2 bottom-2">{item.supply}</div>
+                                                <img src={NetworkList.find(network => network.id === item.network)?.image} alt='network image' className='absolute right-2 top-2' width={24} height={24} />
+                                            </figure>
+                                            <div className="card-body">
+                                                <div>
+                                                    <div className='badge badge-sm mr-2'>Description</div>
+                                                    <span>{item.nftDescription}</span>
+                                                </div>
+                                                <div className='relative flex items-center gap-2 flex-wrap'>
+                                                    <div className='badge badge-sm mr-2'>Contract Address</div>
+                                                    <span className="cursor-pointer" onClick={() => window.open(`${NetworkList.find(network => network.id === item.network)?.explorer}${item.contractAddress}`)}>{item.contractAddress.slice(0, 7)}...{item.contractAddress.slice(-5)}</span>
+                                                    <Icon icon={'solar:copy-outline'} className="cursor-pointer" onClick={() => handleCopyAddress(item.contractAddress)} />
+                                                </div>
+                                                <div className='relative flex items-center gap-2 flex-wrap'>
+                                                    <div className='badge badge-sm mr-2'>Owner Address</div>
+                                                    <span className="cursor-pointer" onClick={() => window.open(`${NetworkList.find(network => network.id === item.network)?.explorer}${item.ownerAddress}`)}>{item.ownerAddress.slice(0, 7)}...{item.ownerAddress.slice(-5)}</span>
+                                                    <Icon icon={'solar:copy-outline'} className="cursor-pointer" onClick={() => handleCopyAddress(item.ownerAddress)} />
+                                                </div>
+                                                <div>
+                                                    <div className='badge badge-sm mr-2'>Token Id</div>
+                                                    <span>{item.tokenId}</span>
+                                                </div>
+                                                <div>
+                                                    <div className='badge badge-sm mr-2'>Symbol</div>
+                                                    <span>{item.symbol}</span>
+                                                </div>
+                                                <div>
+                                                    <div className='badge badge-sm mr-2'>Chain</div>
+                                                    <span>{NetworkList.find(network => network.id === item.network)?.network}</span>
+                                                </div>
+                                                <div>
+                                                    <div className='badge badge-sm mr-2'>Last Synced</div>
+                                                    <span>{item.lastSynced}</span>
+                                                </div>
+                                                <button className="btn btn-block btn-info btn-sm text-white" onClick={() => router.push(`/nftdetail/${item.contractAddress}/${item.network}/${item.tokenId}/${item.ownerAddress}`)}>
+                                                    Show details
+                                                    <Icon icon="ic:twotone-info" fontSize={20} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                             </Stack>
                         )}
                     </Stack>

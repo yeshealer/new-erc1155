@@ -19,39 +19,37 @@ const useCollection = () => {
     const [isDeploying, setIsDeploying] = useState(false);
 
     const getCollectionData = useCallback(async (pathname: string) => {
-        if (collectionDB) {
-            const collectionReference = collectionDB.collection("CollectionData");
-            const data = await collectionReference.get();
-            const collection = data.data.find((item) => item.data.id === pathname) as any;
-            return collection?.data
-        }
-    }, [])
+        if (!collectionDB) return;
+        const collectionReference = collectionDB.collection("CollectionData");
+        const data = await collectionReference.get();
+        const collection = data.data.find((item) => item.data.id === pathname) as any;
+        return collection?.data
+    }, [collectionDB])
 
     const getNFTData = useCallback(async (collection: any) => {
-        if (collectionDB) {
-            console.log(collection)
-            const nftData = await (collectionDB.collection('NFTData')).get();
-            const NFTs = nftData.data.filter((item) => item.data.collectionId === collection.data.id)
-            let displayNFTData = []
-            for (let i = 0; i < NFTs.length; i++) {
-                const imageURL = await get3DImageLink(NFTs[i].data.imageURI)
-                displayNFTData.push({
-                    imageURL: imageURL,
-                    networkImage: NetworkList.find(network => network.id === NFTs[i].data.network)?.image,
-                    nftName: NFTs[i].data.name,
-                    nftDescription: NFTs[i].data.description,
-                    contractAddress: NFTs[i].data.contractAddress,
-                    ownerAddress: NFTs[i].data.ownerAddress,
-                    symbol: NFTs[i].data.symbol,
-                    lastSynced: NFTs[i].data.lastSynced,
-                    tokenId: NFTs[i].data.tokenId,
-                    network: NFTs[i].data.network,
-                    supply: NFTs[i].data.supply
-                })
-            }
-            return displayNFTData;
+        if (!collectionDB && !collection) return;
+        const nftDataResponse = await (collectionDB.collection('NFTData')).get();
+        const nftData = nftDataResponse.data.map(item => item.data)
+        const NFTs = nftData.filter((item) => item.collectionId === collection.id)
+        let displayNFTData = []
+        for (let i = 0; i < NFTs.length; i++) {
+            const imageURL = await get3DImageLink(NFTs[i].imageURI)
+            displayNFTData.push({
+                imageURL: imageURL,
+                networkImage: NetworkList.find(network => network.id === NFTs[i].network)?.image,
+                nftName: NFTs[i].name,
+                nftDescription: NFTs[i].description,
+                contractAddress: NFTs[i].contractAddress,
+                ownerAddress: NFTs[i].ownerAddress,
+                symbol: NFTs[i].symbol,
+                lastSynced: NFTs[i].lastSynced,
+                tokenId: NFTs[i].tokenId,
+                network: NFTs[i].network,
+                supply: NFTs[i].supply
+            })
         }
-    }, [])
+        return displayNFTData;
+    }, [collectionDB])
 
     const deploy = useCallback(async (
         collectionData: any,

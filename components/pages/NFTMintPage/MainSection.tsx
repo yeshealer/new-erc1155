@@ -1,28 +1,16 @@
 import Stack from '@mui/material/Stack'
 import { Button, IconButton } from '@/components/globalstyle';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import React, { useEffect, useState } from 'react'
 import { useSnackbar } from 'notistack';
 import { metaDataOptions } from '@/constants/main';
 import { metaDataTypes } from '@/constants/type';
-import '@google/model-viewer';
 import { infoVariant } from '@/utils/stickyHelper';
 import useIPFS from '@/hooks/useIPFS';
 import useCollection from '@/hooks/useCollection';
 import useNFT from '@/hooks/useNFT';
-
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            'model-viewer': MyElementAttributes;
-        }
-        interface MyElementAttributes {
-            src: string;
-            style: { width: string; height: string; background: string; borderRadius: string }
-        }
-    }
-}
+import ModelViewer from '@/components/widgets/ModelViewer';
 
 export default function MainSection() {
     const router = useRouter();
@@ -30,6 +18,7 @@ export default function MainSection() {
     const { sendFileToIPFS, sendJSONtoIPFS } = useIPFS();
     const { getCollectionData } = useCollection();
     const { mint } = useNFT();
+    const pathname = usePathname();
 
     const [isUploading, setIsUploading] = useState(false);
     const [isMinting, setIsMinting] = useState(false);
@@ -43,7 +32,7 @@ export default function MainSection() {
     const [collectionData, setCollectionData] = useState<any>();
     const [isLoading, setIsLoading] = useState(false);
 
-    const pathname = location.pathname.slice(5, location.pathname.length - 5);
+    const pathName = pathname.slice(5, pathname.length - 5);
 
     const handleFileUpload = (event: any) => {
         setFileImg(event.target.files[0]);
@@ -70,29 +59,38 @@ export default function MainSection() {
     }
 
     const handleMint = async () => {
-        if (fileImg === '') {
-            enqueueSnackbar('Please upload 3D character.', { variant: infoVariant })
-            return;
-        } else if (nftSupply <= 0 || nftName === '' || nftDescription === '' || metaDataLabel === '') {
-            enqueueSnackbar('Please fill out empty boxes.', { variant: infoVariant })
-            return;
-        }
-        if (!collectionData) return;
-        setIsUploading(true)
-        const imageHash = await sendFileToIPFS(fileImg);
-        if (!imageHash) {
+        try {
+            if (fileImg === '') {
+                enqueueSnackbar('Please upload 3D character.', { variant: infoVariant })
+                return;
+            } else if (nftSupply <= 0 || nftName === '' || nftDescription === '' || metaDataLabel === '') {
+                enqueueSnackbar('Please fill out empty boxes.', { variant: infoVariant })
+                return;
+            } else if (!collectionData) {
+                enqueueSnackbar('Collection data load failed!', { variant: infoVariant })
+                return;
+            }
+            setIsUploading(true)
+            const imageHash = await sendFileToIPFS(fileImg);
+            if (!imageHash) {
+                setIsUploading(false)
+                return;
+            }
+            const tokenURI = await sendJSONtoIPFS(imageHash, nftName, nftDescription, selectedMetaDatas);
+            if (!tokenURI) {
+                setIsUploading(false)
+                return;
+            }
+            setIsUploading(false);
+            setIsMinting(true);
+            await mint(collectionData, tokenURI, nftSupply, nftName, nftDescription);
+            setMetaDataLabel('');
+            setIsMinting(false);
+        } catch (err) {
+            console.log(err)
             setIsUploading(false)
-            return;
+            setIsMinting(false)
         }
-        const tokenURI = await sendJSONtoIPFS(imageHash, nftName, nftDescription, selectedMetaDatas);
-        if (!tokenURI) {
-            setIsUploading(false)
-            return;
-        }
-        setIsUploading(false);
-        setIsMinting(true);
-        await mint(collectionData, tokenURI, nftSupply);
-        setIsMinting(false);
     }
 
     useEffect(() => {
@@ -104,7 +102,7 @@ export default function MainSection() {
     useEffect(() => {
         (async () => {
             setIsLoading(true)
-            const collection = await getCollectionData(pathname);
+            const collection = await getCollectionData(pathName);
             setCollectionData(collection)
             setIsLoading(false)
         })();
@@ -135,8 +133,8 @@ export default function MainSection() {
                     alignItems='center'
                     sx={{ minHeight: 'calc(100vh - 100px)' }}
                 >
-                    <span className="loading loading-success w-32 text-info"></span>
-                    <div className='text-lime-500 font-bold text-2xl'>Minting...</div>
+                    <span className="loading loading-infinity w-32 text-success"></span>
+                    <div className='text-green-500 font-bold text-2xl'>Minting...</div>
                 </Stack>
             ) : (
                 <Stack className="max-w-7xl w-full relative">
@@ -168,7 +166,7 @@ export default function MainSection() {
                                             setPrevUrl('')
                                             setFileImg('')
                                         }} />
-                                        <model-viewer style={{ width: '100%', height: '100%', background: '#e0f2fe', borderRadius: '12px' }} src={prevUrl} camera-controls="true" touch-action="pan-y" ar-status="not-presenting" />
+                                        <ModelViewer prevURL={prevUrl} />
                                     </div>
                                 )}
                             </div>

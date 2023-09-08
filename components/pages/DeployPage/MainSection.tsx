@@ -8,10 +8,9 @@ import Stack from "@mui/material/Stack";
 import { IconButton } from "@/components/globalstyle";
 import { NetworkList } from '@/constants/main';
 // ** web3 imports
-import { useAccount, useBalance, useSwitchNetwork } from 'wagmi';
+import { useAccount, useBalance, useSwitchNetwork, useNetwork } from 'wagmi';
 // ** utils & provider & abis
 import useCollection from '@/hooks/useCollection';
-import useNetwork from '@/hooks/useNetwork';
 
 export default function MainSection() {
 
@@ -19,7 +18,7 @@ export default function MainSection() {
     const [collectionInfo, setCollectionInfo] = useState<any>();
 
     const router = useRouter();
-    const { chainID } = useNetwork();
+    const { chain } = useNetwork();
     const { address } = useAccount();
     const { data: balance } = useBalance({
         address: address,
@@ -49,7 +48,7 @@ export default function MainSection() {
                 setIsLoading(false)
             }
         })()
-    }, [chainID])
+    }, [chain?.id])
 
     return (
         <Stack direction='row' alignItems='center' justifyContent='center' className="px-3">
@@ -104,7 +103,7 @@ export default function MainSection() {
                                                         </div>
                                                         {isDeployed ? <span className="badge badge-accent text-white">Deployed</span> : switching ? <span></span> : <span className="badge">Not live</span>}
                                                     </div>
-                                                    {item.id === chainID ? (
+                                                    {item.id === chain?.id ? (
                                                         <div className='text-gray-500 text-sm flex items-center justify-between w-full mt-3'>
                                                             <div className='px-2'>
                                                                 Balance: {Number(balance?.formatted).toLocaleString(undefined, { maximumFractionDigits: 4, minimumFractionDigits: 0 })} {item.currency}

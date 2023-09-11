@@ -122,7 +122,7 @@ export default function MainSection() {
 
     useEffect(() => {
         getInitialData();
-    }, [])
+    }, [chain?.id])
 
     useEffect(() => {
         setSelectedDrop(searchParams.get('address') || '')

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import '@google/model-viewer';
+import React from 'react'
+import '@google/model-viewer/lib/model-viewer';
 
 declare global {
     namespace JSX {

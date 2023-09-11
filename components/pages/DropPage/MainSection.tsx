@@ -108,16 +108,21 @@ export default function MainSection() {
     }
 
     const getInitialData = async () => {
-        setIsLoading(true)
-        const dropInfo = await getDropData();
-        if (!dropInfo) return;
-        setDropData(dropInfo)
-        dropInfo.map(item => {
-            setOwnerIcon(Array.from({ length: dropInfo.length }, () => 'solar:copy-outline'))
-            setFullDesc(Array.from({ length: dropInfo.length }, () => true))
-            setBuyAmountList(Array.from({ length: dropInfo.length }, () => 1))
-        })
-        setIsLoading(false);
+        try {
+            setIsLoading(true)
+            const dropInfo = await getDropData();
+            if (!dropInfo) return;
+            setDropData(dropInfo)
+            dropInfo.map(item => {
+                setOwnerIcon(Array.from({ length: dropInfo.length }, () => 'solar:copy-outline'))
+                setFullDesc(Array.from({ length: dropInfo.length }, () => true))
+                setBuyAmountList(Array.from({ length: dropInfo.length }, () => 1))
+            })
+            setIsLoading(false);
+        } catch (err) {
+            console.log(err)
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -223,7 +228,7 @@ export default function MainSection() {
                             <Icon icon="solar:undo-left-bold" fontSize={20} />
                         </IconButton>
                         <div className='flex flex-col sm:flex-row gap-2 items-end'>
-                            <Button onClick={() => router.push('/drop/marketplace')} className='bg-lime-500 hover:bg-lime-400'>
+                            <Button className='bg-lime-500 hover:bg-lime-400'>
                                 <Icon icon="mdi:marketplace" fontSize={20} />
                                 Marketplace
                             </Button>

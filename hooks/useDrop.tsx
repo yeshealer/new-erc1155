@@ -25,17 +25,21 @@ export default function useDrop() {
     const collecterDatabase = dropDB.collection('CollecterCollection');
 
     const getDropData = async () => {
-        if (!dropDB) return;
-        const collectionReference = dropDB.collection("DropCollection");
-        const data = await collectionReference.get();
-        const dropData = data.data.map(item => item.data)
-        const dropDataLatest: any[] = []
-        for (let i = 0; i < dropData.length; i++) {
-            const imgLink = await get3DImageLink(dropData[i].baseURI)
-            dropDataLatest.push({ ...dropData[i], imageURL: imgLink })
+        try {
+            if (!dropDB) return;
+            const collectionReference = dropDB.collection("DropCollection");
+            if (!collectionReference) return;
+            const data = await collectionReference.get();
+            const dropData = data.data.map(item => item.data)
+            const dropDataLatest: any[] = []
+            for (let i = 0; i < dropData.length; i++) {
+                const imgLink = await get3DImageLink(dropData[i].baseURI)
+                dropDataLatest.push({ ...dropData[i], imageURL: imgLink })
+            }
+            return dropDataLatest
+        } catch (err) {
+            console.log(err)
         }
-        console.log(dropDataLatest)
-        return dropDataLatest
     }
 
     const createDrop = async (dropDetail: DropDetailTypes, tokenURI: string, price: number, duration: number, setIsMinting: Dispatch<SetStateAction<boolean>>) => {

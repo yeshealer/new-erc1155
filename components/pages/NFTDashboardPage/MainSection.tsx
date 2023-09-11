@@ -181,7 +181,8 @@ export default function MainSection() {
                                                     <div className='badge badge-sm mr-2'>Last Synced</div>
                                                     <span>{item.lastSynced}</span>
                                                 </div>
-                                                <button className="btn btn-block btn-info btn-sm text-white" onClick={() => router.push(`/nftdetail/${item.contractAddress}/${item.network}/${item.tokenId}/${item.ownerAddress}`)}>
+                                                {/* <button className="btn btn-block btn-info btn-sm text-white" onClick={() => router.push(`/nftdetail/${item.contractAddress}/${item.network}/${item.tokenId}/${item.ownerAddress}`)}> */}
+                                                <button className="btn btn-block btn-info btn-sm text-white">
                                                     Show details
                                                     <Icon icon="ic:twotone-info" fontSize={20} />
                                                 </button>

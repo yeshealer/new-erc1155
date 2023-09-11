@@ -24,12 +24,13 @@ export default function useDrop() {
     const dropDatabase = dropDB.collection('DropCollection')
     const collecterDatabase = dropDB.collection('CollecterCollection');
 
-    const getDropData = async () => {
+    const getDropData = async (setIsLoading: Dispatch<SetStateAction<boolean>>) => {
         try {
             if (!dropDB) return;
             const collectionReference = dropDB.collection("DropCollection");
             if (!collectionReference) return;
             const data = await collectionReference.get();
+            console.log(data)
             const dropData = data.data.map(item => item.data)
             const dropDataLatest: any[] = []
             for (let i = 0; i < dropData.length; i++) {
@@ -39,6 +40,7 @@ export default function useDrop() {
             return dropDataLatest
         } catch (err) {
             console.log(err)
+            setIsLoading(false)
         }
     }
 

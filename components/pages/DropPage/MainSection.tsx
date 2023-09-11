@@ -110,7 +110,7 @@ export default function MainSection() {
     const getInitialData = async () => {
         try {
             setIsLoading(true)
-            const dropInfo = await getDropData();
+            const dropInfo = await getDropData(setIsLoading);
             if (!dropInfo) return;
             setDropData(dropInfo)
             dropInfo.map(item => {

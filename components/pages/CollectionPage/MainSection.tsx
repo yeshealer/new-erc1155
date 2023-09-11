@@ -13,6 +13,7 @@ import Stack from "@mui/material/Stack";
 import { IconButton, Button } from "@/components/globalstyle";
 import { getCollectionDB } from "@/utils/polybaseHelper";
 import { errorVariant, successVariant, warningVariant } from "@/utils/stickyHelper";
+import { createCollectionSchema } from "@/utils/polybaseHelper";
 
 export default function MainSection() {
     const { address } = useAccount();
@@ -45,97 +46,7 @@ export default function MainSection() {
                 enqueueSnackbar("Percentage can't be greater than 50%", { variant: errorVariant });
             } else {
                 setIsSaving(true)
-                await CollectionDB.applySchema(`
-                    @public
-                    collection NFTData {
-                        id: string;
-                        imageURI: string;
-                        collectionId: string;
-                        supply: number;
-                        name: string;
-                        description: string;
-                        network: number;
-                        tokenId: number;
-                        contractAddress: string;
-                        ownerAddress: string;
-                        symbol: string;
-                        lastSynced: string;
-
-                        constructor (id: string, imageURI: string, collectionId: string, supply: number, name: string, description: string, network: number, tokenId: number, contractAddress: string, ownerAddress: string, symbol: string, lastSynced: string) {
-                            this.id = id;
-                            this.imageURI = imageURI;
-                            this.collectionId = collectionId;
-                            this.supply = supply;
-                            this.name = name;
-                            this.description = description;
-                            this.network = network;
-                            this.tokenId = tokenId;
-                            this.contractAddress = contractAddress;
-                            this.ownerAddress = ownerAddress;
-                            this.symbol = symbol;
-                            this.lastSynced = lastSynced;
-                        }
-
-                        updateSupply(newSupply: number) {
-                            this.supply = newSupply;
-                        }
-
-                        updateSynced(newSynced: string) {
-                            this.lastSynced = newSynced;
-                        }
-
-                        del () {
-                            selfdestruct();
-                        }
-                    }
-
-                    @public
-                    collection CollectionData {
-                        id: string;
-                        wallet: string;
-                        collectionName: string;
-                        symbol: string;
-                        maxSupply: number;
-                        tokenPrice: number;
-                        tokenStandard: string;
-                        recipientAddress: string;
-                        recipientPercentage: number;
-                        deployedNetwork: number[];
-                        deployedAddress: string;
-                        isPublic: boolean;
-
-                        constructor (id: string, wallet: string, collectionName: string, symbol: string, maxSupply: number, tokenPrice: number, tokenStandard: string, recipientAddress: string, recipientPercentage: number, deployedNetwork: number[], deployedAddress: string, isPublic: boolean) {
-                            this.id = id;
-                            this.wallet = wallet;
-                            this.collectionName = collectionName;
-                            this.symbol = symbol;
-                            this.maxSupply = maxSupply;
-                            this.tokenPrice = tokenPrice;
-                            this.tokenStandard = tokenStandard;
-                            this.recipientAddress = recipientAddress;
-                            this.recipientPercentage = recipientPercentage;
-                            this.deployedNetwork = deployedNetwork;
-                            this.deployedAddress = deployedAddress;
-                            this.isPublic = isPublic;
-                        }
-
-                        updateDeployedNetwork(deployingNetwork: number[]) {
-                            this.deployedNetwork = deployingNetwork;
-                        }
-
-                        updateDeployedAddress(deployAddress: string) {
-                            this.deployedAddress = deployAddress;
-                        }
-
-                        updatePublic(newIsPublic: boolean) {
-                            this.isPublic = newIsPublic;
-                        }
-
-                        del () {
-                            selfdestruct();
-                        }
-                    }`
-                );
+                await createCollectionSchema();
                 const collectionReference = CollectionDB.collection("CollectionData");
                 const id = encryptString(collectionName + collectionSymbol)
 
@@ -155,7 +66,6 @@ export default function MainSection() {
                 ]);
                 setIsSaving(false)
                 enqueueSnackbar("Saved collection successfully!", { variant: successVariant });
-                // router.push('/create');
             }
         } catch (err: any) {
             console.log(err);

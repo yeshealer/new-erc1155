@@ -60,7 +60,7 @@ export default function MainSection() {
                             <Icon icon="material-symbols:add-location-rounded" fontSize={20} />
                             Create Collection
                         </Button>
-                    </Stack >
+                    </Stack>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full justify-center py-3">
                         {collectionData && collectionData.data.map((item: any) => {
                             if (item.data.isPublic || item.data.wallet === address) {

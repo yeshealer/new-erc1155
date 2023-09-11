@@ -1,4 +1,4 @@
-import { metaDataTypes } from "./type";
+import { DurationUnit, dateDataTypes, metaDataTypes } from "./type";
 
 export const HeaderLink = [
     { title: 'Create', link: '' },
@@ -52,3 +52,28 @@ export const metaDataOptions: metaDataTypes[] = [
     { label: "Urna mi", value: '7', checked: false },
     { label: "Eget lectus", value: '8', checked: false }
 ];
+
+export const dateData: dateDataTypes[] = [
+    { label: 'Minutes', value: DurationUnit.min, time: 60 },
+    { label: 'Hours', value: DurationUnit.hr, time: 3600 },
+    { label: 'Days', value: DurationUnit.day, time: 86400 },
+    { label: 'Month', value: DurationUnit.Month, time: 2592000 }
+]
+
+export const currencyData = [
+    {
+        chainId: 11155111, currency: [
+            { label: 'ETH', value: 'eth' },
+        ]
+    },
+    {
+        chainId: 80001, currency: [
+            { label: 'MATIC', value: 'matic' },
+        ]
+    },
+    {
+        chainId: 43113, currency: [
+            { label: 'AVAX', value: 'avax' },
+        ]
+    }
+]

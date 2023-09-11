@@ -1,6 +1,6 @@
 // ** react & next imports
 import React, { useState, useEffect } from 'react'
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 // ** UI module imports
 import { Icon } from "@iconify/react";
 import Stack from "@mui/material/Stack";
@@ -19,6 +19,7 @@ export default function MainSection() {
 
     const { open } = useWeb3Modal();
     const router = useRouter();
+    const pathname = usePathname();
     const { chain } = useNetwork();
     const { address, isConnected } = useAccount();
     const { data: balance } = useBalance({
@@ -31,17 +32,17 @@ export default function MainSection() {
         deploy,
     } = useCollection();
 
-    const pathname = location.pathname.slice(8, location.pathname.length);
+    const pathName = pathname.slice(8, pathname.length);
 
     const handleDeploy = async (collectionInfo: any, chainID: number) => {
-        await deploy(collectionInfo, chainID, pathname, setCollectionInfo);
+        await deploy(collectionInfo, chainID, pathName, setCollectionInfo);
     }
 
     useEffect(() => {
         (async () => {
             try {
                 setIsLoading(true)
-                const collection = await getCollectionData(pathname);
+                const collection = await getCollectionData(pathName);
                 setCollectionInfo(collection)
                 setIsLoading(false)
             } catch (err) {
@@ -130,7 +131,7 @@ export default function MainSection() {
                                                             <Icon icon="tabler:external-link" fontSize={18} />
                                                         </button>
                                                     ) : (
-                                                        <button className="btn btn-sm btn-block btn-info text-white" onClick={async () => await handleDeploy(collectionInfo, item.id)}>Deploy</button>
+                                                        <button disabled={item.id !== chain?.id} className="btn btn-sm btn-block btn-info text-white" onClick={async () => await handleDeploy(collectionInfo, item.id)}>Deploy</button>
                                                     )}
                                                 </div>
                                             </div>

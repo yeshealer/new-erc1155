@@ -37,7 +37,6 @@ const useNFT = () => {
                 if (!res.hash) return;
                 const txnHash = res.hash;
                 const result = await waitForTransaction({ hash: txnHash });
-                console.log(result)
                 if (result.status === 'success') {
                     await saveNFTDB(collectionData, tokenURI, nftSupply, nftName, nftDescription)
                 }

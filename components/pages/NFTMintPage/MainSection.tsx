@@ -171,7 +171,7 @@ export default function MainSection() {
                                 )}
                             </div>
                         </Stack>
-                        <Stack direction='row' gap={2}>
+                        <Stack direction={{ sm: 'column', md: 'row' }} gap={2}>
                             <Stack gap={1} width='100%'>
                                 <span className="badge badge-info text-white">Supply</span>
                                 <input
@@ -193,7 +193,7 @@ export default function MainSection() {
                                 />
                             </Stack>
                         </Stack>
-                        <Stack direction='row' gap={2}>
+                        <Stack direction={{ sm: 'column', md: 'row' }} gap={2}>
                             <Stack gap={1} width='100%'>
                                 <span className="badge badge-info text-white">Description</span>
                                 <input

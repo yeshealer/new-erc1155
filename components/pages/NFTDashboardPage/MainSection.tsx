@@ -81,7 +81,7 @@ export default function MainSection() {
                     </Stack>
                     <div className='divider' />
                     {collectionInfo && (
-                        <Stack className='w-full' direction='row' justifyContent='space-between' alignItems='center'>
+                        <Stack className='w-full' direction={{ sm: 'column', md: 'row' }} justifyContent='space-between' alignItems='center'>
                             <Stack className='w-full' direction='row' gap={4} flexWrap='wrap'>
                                 <Stack justifyContent='space-between' gap={1.5}>
                                     <div className='badge badge-info text-white'>Collection Name</div>
@@ -115,7 +115,7 @@ export default function MainSection() {
                                 </Stack>
                             </Stack>
                             {(collectionInfo.deployedNetwork.length > 0 && collectionInfo.deployedNetwork.includes(chain?.id)) && (
-                                <button className={`btn btn-info text-white`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
+                                <button className={`btn btn-info text-white w-full sm:w-auto mt-4 sm:mt-0`} onClick={() => router.push(`/nft/${collectionInfo.id}/mint`)}>
                                     Create NFT
                                 </button>
                             )}

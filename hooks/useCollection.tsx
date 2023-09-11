@@ -118,7 +118,7 @@ const useCollection = () => {
         getCollectionData,
         deploy,
         saveCollectionDB,
-        getNFTData
+        getNFTData,
     }
 }
 

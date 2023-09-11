@@ -18,9 +18,6 @@ const nextConfig = {
                 hostname: 'uploads-ssl.webflow.com'
             }
         ]
-    },
-    typescript: {
-        ignoreBuildErrors: true
     }
 }
 

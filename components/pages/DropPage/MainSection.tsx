@@ -244,7 +244,7 @@ export default function MainSection() {
                                 <Element name={item.contractAddress} id={item.contractAddress} key={item.id}>
                                     <div className="card card-compact bg-base-100 shadow-xl shadow-sky-500/20 border border-sky-500/50">
                                         <figure className='relative'>
-                                            <ModelViewer prevURL={item.imageURL} />
+                                            {item.imageURL && <ModelViewer prevURL={item.imageURL} />}
                                         </figure>
                                         <div className="card-body p-1">
                                             <div className=''>

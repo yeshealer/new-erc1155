@@ -1,4 +1,4 @@
-import React from 'react'
+import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
 import '@google/model-viewer/lib/model-viewer';
 
 declare global {

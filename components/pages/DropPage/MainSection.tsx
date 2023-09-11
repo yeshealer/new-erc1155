@@ -266,8 +266,8 @@ export default function MainSection() {
                                                     {NetworkList.map(network => {
                                                         return (
                                                             <div className='flex items-center gap-2 h-10' key={network.id}>
-                                                                <img src={network.image} className={item.network.includes(network.network) ? '' : 'item-gray'} width={25} height={25} draggable={false} alt="network" />
-                                                                <div className={`fs-14 t-normal t-greyWhite ${item.network.includes(network.network) ? '' : 'item-gray'}`}>{item.buyedAmount[getNetworkIndex(network.id)]} / {item.maxEditions[getNetworkIndex(network.id)]}</div>
+                                                                <img src={network.image} className={item.network.includes(network.network) ? '' : 'grayscale'} width={25} height={25} draggable={false} alt="network" />
+                                                                <div className={`fs-14 t-normal t-greyWhite ${item.network.includes(network.network) ? '' : 'grayscale'}`}>{item.buyedAmount[getNetworkIndex(network.id)]} / {item.maxEditions[getNetworkIndex(network.id)]}</div>
                                                                 {(!item.network.includes(network.network) && item.royalReceiver === address) && (
                                                                     <button
                                                                         onClick={() => handleClickAddNetworkModal(

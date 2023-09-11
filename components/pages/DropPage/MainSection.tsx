@@ -341,7 +341,7 @@ export default function MainSection() {
                                                     ) : (
                                                         [daysStyle, hoursStyle, minutesStyle, secondsStyle].map((item, index) => {
                                                             return (
-                                                                <div className='text-gray-500'>
+                                                                <div className='text-gray-500' key={item}>
                                                                     <span className="countdown text-2xl text-sky-500 mr-1">
                                                                         <span style={item}></span>
                                                                     </span>

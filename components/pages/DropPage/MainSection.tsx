@@ -234,7 +234,7 @@ export default function MainSection() {
                         </div>
                     </Stack>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 my-4 gap-4'>
-                        {(dropData && dropData.length > 0 && chain?.id) && dropData.map((item: any, index: number) => {
+                        {(dropData && dropData.length > 0) && dropData.map((item: any, index: number) => {
                             const daysStyle: any = { '--value': dayCounter[index] };
                             const hoursStyle: any = { '--value': hoursCounter[index] };
                             const minutesStyle: any = { '--value': minutesCounter[index] };
@@ -243,7 +243,7 @@ export default function MainSection() {
                             return (
                                 <Element name={item.contractAddress} id={item.contractAddress} key={item.id}>
                                     <div className="card card-compact bg-base-100 shadow-xl shadow-sky-500/20 border border-sky-500/50">
-                                        <figure>
+                                        <figure className='relative'>
                                             <ModelViewer prevURL={item.imageURL} />
                                         </figure>
                                         <div className="card-body p-1">
@@ -325,7 +325,7 @@ export default function MainSection() {
                                                 <div className='flex items-center gap-2'>
                                                     <div className='badge badge-primary text-white badge-sm'>ERC-1155</div>
                                                     <div className='badge badge-warning text-white badge-sm'>{item.royalFee}% Fee</div>
-                                                    {NetworkList.map(item => item.id).includes(chain?.id) && <div className='badge badge-success text-white badge-sm'>{item.pricePerToken === 0 ? 'Free' : `${item.pricePerToken} ${NetworkList.find(item => item.id === chain?.id)?.currency}`}</div>}
+                                                    {NetworkList.map(item => item.id).includes(chain?.id as number) && <div className='badge badge-success text-white badge-sm'>{item.pricePerToken === 0 ? 'Free' : `${item.pricePerToken} ${NetworkList.find(item => item.id === chain?.id)?.currency}`}</div>}
                                                 </div>
                                             </div>
                                             <div className=''>
@@ -390,7 +390,7 @@ export default function MainSection() {
                                                             const value = event.target.valueAsNumber;
                                                             if (
                                                                 value <=
-                                                                item.maxEditions[getNetworkIndex(chain?.id)] - item.buyedAmount[getNetworkIndex(chain?.id)]
+                                                                item.maxEditions[getNetworkIndex(chain?.id as number)] - item.buyedAmount[getNetworkIndex(chain?.id as number)]
                                                             ) {
                                                                 setBuyAmountList((prevState) => [
                                                                     ...prevState.slice(0, index),
@@ -406,8 +406,8 @@ export default function MainSection() {
                                                     className="btn btn-info btn-sm text-white"
                                                     disabled={
                                                         isEnded ||
-                                                        (item.buyedAmount[getNetworkIndex(chain?.id)] + Number(buyAmountList[index])) >
-                                                        item.maxEditions[getNetworkIndex(chain?.id)] ||
+                                                        (item.buyedAmount[getNetworkIndex(chain?.id as number)] + Number(buyAmountList[index])) >
+                                                        item.maxEditions[getNetworkIndex(chain?.id as number)] ||
                                                         buyAmountList[index] === 0
                                                     }
                                                     onClick={() => {
@@ -428,9 +428,9 @@ export default function MainSection() {
                                                             NetworkList.find((item) => item.id === chain?.id)?.network || ''
                                                         )
                                                             ? 'Deploy Drop'
-                                                            : (Number(item.buyedAmount[getNetworkIndex(chain?.id)]) +
+                                                            : (Number(item.buyedAmount[getNetworkIndex(chain?.id as number)]) +
                                                                 Number(buyAmountList[index])) >
-                                                                Number(item.maxEditions[getNetworkIndex(chain?.id)])
+                                                                Number(item.maxEditions[getNetworkIndex(chain?.id as number)])
                                                                 ? 'Rate Limited'
                                                                 : 'Claim'
                                                     }

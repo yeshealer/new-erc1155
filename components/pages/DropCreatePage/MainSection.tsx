@@ -89,8 +89,7 @@ export default function MainSection() {
             setIsUploading(false);
             setIsMinting(true);
             const duration = dropDetail.duration * (dateData.find(({ value }) => value === dropDetail.durationUnit)?.time || 0);
-            await createDrop(dropDetail, tokenURI, price, duration)
-            setIsMinting(false);
+            await createDrop(dropDetail, tokenURI, price, duration, setIsMinting)
         } catch (err) {
             console.log(err)
             setIsUploading(false)

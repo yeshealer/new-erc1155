@@ -5,6 +5,7 @@ import { ethers } from 'ethers'
 import { useAccount, useNetwork } from 'wagmi'
 import { createDropSchema, getDropDB } from '@/utils/polybaseHelper'
 import { NetworkList } from '@/constants/main'
+import { Dispatch, SetStateAction } from 'react'
 
 export default function useDrop() {
     const dropFactoryAddress = process.env.DROP_FACTORY_CONTRACT as `0x${string}`
@@ -23,7 +24,7 @@ export default function useDrop() {
         return dropData
     }
 
-    const createDrop = async (dropDetail: DropDetailTypes, tokenURI: string, price: number, duration: number) => {
+    const createDrop = async (dropDetail: DropDetailTypes, tokenURI: string, price: number, duration: number, setIsMinting: Dispatch<SetStateAction<boolean>>) => {
         if (!dropDetail || !tokenURI || price < 0 || !duration) return;
         const bigPrice = price === 0 ? 0 : ethers.parseEther(price.toString())
         const startTimestamp = Date.now()
@@ -53,12 +54,12 @@ export default function useDrop() {
             const txnHash = res.hash;
             const result = await waitForTransaction({ hash: txnHash });
             if (result.status === 'success') {
-                await saveDropDB(tokenURI, startTimestamp, endTimestamp, price, duration, dropDetail)
+                await saveDropDB(tokenURI, startTimestamp, endTimestamp, price, duration, dropDetail, setIsMinting)
             }
         })
     }
 
-    const saveDropDB = async (tokenURI: string, startTimestamp: number, endTimestamp: number, price: number, duration: number, dropDetail: DropDetailTypes) => {
+    const saveDropDB = async (tokenURI: string, startTimestamp: number, endTimestamp: number, price: number, duration: number, dropDetail: DropDetailTypes, setIsMinting: Dispatch<SetStateAction<boolean>>) => {
         if (!address || !chain || !dropDB) return;
         try {
             const dropContractAddress = await readContract({
@@ -95,8 +96,10 @@ export default function useDrop() {
                 [0, 0, 0],
                 [],
             ]);
+            setIsMinting(false)
         } catch (err) {
             console.log(err)
+            setIsMinting(false)
         }
     }
 

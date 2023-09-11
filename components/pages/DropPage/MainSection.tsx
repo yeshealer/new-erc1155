@@ -241,202 +241,204 @@ export default function MainSection() {
                             const secondsStyle: any = { '--value': secondsCounter[index] };
                             const isEnded = dayCounter[index] <= 0 && hoursCounter[index] <= 0 && minutesCounter[index] < 0
                             return (
-                                <div className="card card-compact bg-base-100 shadow-xl shadow-sky-500/20 border border-sky-500/50">
-                                    <figure className='relative'>
-                                        <ModelViewer prevURL={item.imageURL} />
-                                    </figure>
-                                    <div className="card-body p-1">
-                                        <div className=''>
-                                            <div className='badge badge-outline badge-info badge-sm'>
-                                                <Icon icon="ph:user-bold" className='mr-1' />
-                                                Created by
+                                <Element name={item.contractAddress} id={item.contractAddress} key={item.id}>
+                                    <div className="card card-compact bg-base-100 shadow-xl shadow-sky-500/20 border border-sky-500/50">
+                                        <figure className='relative'>
+                                            {/* <ModelViewer prevURL={item.imageURL} /> */}
+                                        </figure>
+                                        <div className="card-body p-1">
+                                            <div className=''>
+                                                <div className='badge badge-outline badge-info badge-sm'>
+                                                    <Icon icon="ph:user-bold" className='mr-1' />
+                                                    Created by
+                                                </div>
+                                                <div className='flex items-center gap-2'>
+                                                    <div className='overflow-hidden text-ellipsis'>{item.royalReceiver}</div>
+                                                    <Icon icon={ownerIcon[index]} fontSize={18} className="w-4 cursor-pointer" onClick={() => handleCopyAddress(item.royalReceiver, index)} />
+                                                </div>
                                             </div>
-                                            <div className='flex items-center gap-2'>
-                                                <div className='overflow-hidden text-ellipsis'>{item.royalReceiver}</div>
-                                                <Icon icon={ownerIcon[index]} fontSize={18} className="w-4 cursor-pointer" onClick={() => handleCopyAddress(item.royalReceiver, index)} />
-                                            </div>
-                                        </div>
-                                        <div className=''>
-                                            <div className='badge badge-outline badge-info badge-sm'>
-                                                <Icon icon="fluent:presence-available-10-regular" className='mr-1' />
-                                                Available on
-                                            </div>
-                                            <div className='flex flex-wrap items-center gap-5'>
-                                                {NetworkList.map(network => {
-                                                    return (
-                                                        <div className='flex items-center gap-2 h-10' key={network.id}>
-                                                            <img src={network.image} className={item.network.includes(network.network) ? '' : 'item-gray'} width={25} height={25} draggable={false} alt="network" />
-                                                            <div className={`fs-14 t-normal t-greyWhite ${item.network.includes(network.network) ? '' : 'item-gray'}`}>{item.buyedAmount[getNetworkIndex(network.id)]} / {item.maxEditions[getNetworkIndex(network.id)]}</div>
-                                                            {(!item.network.includes(network.network) && item.royalReceiver === address) && (
-                                                                <button
-                                                                    onClick={() => handleClickAddNetworkModal(
-                                                                        network.id,
-                                                                        item.title,
-                                                                        item.description,
-                                                                        item.symbol,
-                                                                        item.maxEditions,
-                                                                        item.baseURI,
-                                                                        item.pricePerToken,
-                                                                        item.duration,
-                                                                        item.royalFee,
-                                                                        item.id,
-                                                                        item.network,
-                                                                        item.startTimestamp,
-                                                                        item.endTimestamp,
-                                                                        item.dropId,
-                                                                        item.contractAddress
-                                                                    )}
-                                                                    className='rounded-full bg-sky-500 hover:bg-sky-400 text-white p-1'
-                                                                >
-                                                                    <Icon icon="ic:round-plus" fontSize={20} />
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        </div>
-                                        <div className=''>
-                                            <div className='badge badge-outline badge-info badge-sm'>
-                                                <Icon icon="tabler:file-description" className='mr-1' />
-                                                Description
-                                            </div>
-                                            <div className='min-h-[100px]'>
-                                                {(item.description.length > 230 && fullDesc[index]) ? item.description.slice(0, 230) + '...' : item.description}
-                                                {item.description.length > 230 && <span className="ml-1 text-sky-500 cursor-pointer" onClick={() => setFullDesc(prevState => [...prevState.slice(0, index), !prevState[index], ...prevState.slice(dropData.length - index)])}>{fullDesc[index] ? 'See more' : 'See less'}</span>}
-                                            </div>
-                                        </div>
-                                        <div className=''>
-                                            <div className='badge badge-outline badge-info badge-sm'>
-                                                <Icon icon="ph:link" className='mr-1' />
-                                                Contract Address
-                                            </div>
-                                            <div className='flex items-center gap-2'>
-                                                <div className='overflow-hidden text-ellipsis'>{item.contractAddress}</div>
-                                                <Icon icon="ph:link" fontSize={18} className="w-4 cursor-pointer" onClick={() => { window.open(NetworkList.find(item => item.id === chain?.id)?.explorer + item.contractAddress) }} />
-                                            </div>
-                                        </div>
-                                        <div className=''>
-                                            <div className='badge badge-outline badge-info badge-sm'>
-                                                <Icon icon="fluent:apps-list-detail-24-regular" className='mr-1' />
-                                                Details
-                                            </div>
-                                            <div className='flex items-center gap-2'>
-                                                <div className='badge badge-primary text-white badge-sm'>ERC-1155</div>
-                                                <div className='badge badge-warning text-white badge-sm'>{item.royalFee}% Fee</div>
-                                                {NetworkList.map(item => item.id).includes(chain?.id as number) && <div className='badge badge-success text-white badge-sm'>{item.pricePerToken === 0 ? 'Free' : `${item.pricePerToken} ${NetworkList.find(item => item.id === chain?.id)?.currency}`}</div>}
-                                            </div>
-                                        </div>
-                                        <div className=''>
-                                            <div className='badge badge-outline badge-info badge-sm'>
-                                                <Icon icon="icon-park-outline:time" className='mr-1' />
-                                                Ends in
-                                            </div>
-                                            <div className="flex flex-wrap gap-5">
-                                                {isEnded ? (
-                                                    <div className='badge badge-error text-white mt-1.5'>This drop has been ended.</div>
-                                                ) : (
-                                                    [daysStyle, hoursStyle, minutesStyle, secondsStyle].map((item, index) => {
+                                            <div className=''>
+                                                <div className='badge badge-outline badge-info badge-sm'>
+                                                    <Icon icon="fluent:presence-available-10-regular" className='mr-1' />
+                                                    Available on
+                                                </div>
+                                                <div className='flex flex-wrap items-center gap-5'>
+                                                    {NetworkList.map(network => {
                                                         return (
-                                                            <div className='text-gray-500' key={item}>
-                                                                <span className="countdown text-2xl text-sky-500 mr-1">
-                                                                    <span style={item}></span>
-                                                                </span>
-                                                                {durationUnitList[index]}
+                                                            <div className='flex items-center gap-2 h-10' key={network.id}>
+                                                                <img src={network.image} className={item.network.includes(network.network) ? '' : 'item-gray'} width={25} height={25} draggable={false} alt="network" />
+                                                                <div className={`fs-14 t-normal t-greyWhite ${item.network.includes(network.network) ? '' : 'item-gray'}`}>{item.buyedAmount[getNetworkIndex(network.id)]} / {item.maxEditions[getNetworkIndex(network.id)]}</div>
+                                                                {(!item.network.includes(network.network) && item.royalReceiver === address) && (
+                                                                    <button
+                                                                        onClick={() => handleClickAddNetworkModal(
+                                                                            network.id,
+                                                                            item.title,
+                                                                            item.description,
+                                                                            item.symbol,
+                                                                            item.maxEditions,
+                                                                            item.baseURI,
+                                                                            item.pricePerToken,
+                                                                            item.duration,
+                                                                            item.royalFee,
+                                                                            item.id,
+                                                                            item.network,
+                                                                            item.startTimestamp,
+                                                                            item.endTimestamp,
+                                                                            item.dropId,
+                                                                            item.contractAddress
+                                                                        )}
+                                                                        className='rounded-full bg-sky-500 hover:bg-sky-400 text-white p-1'
+                                                                    >
+                                                                        <Icon icon="ic:round-plus" fontSize={20} />
+                                                                    </button>
+                                                                )}
                                                             </div>
                                                         )
-                                                    })
-                                                )}
+                                                    })}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className=''>
-                                            <div className='badge badge-outline badge-info badge-sm'>
-                                                <Icon icon="ph:users-duotone" className='mr-1' />
-                                                Collected by
+                                            <div className=''>
+                                                <div className='badge badge-outline badge-info badge-sm'>
+                                                    <Icon icon="tabler:file-description" className='mr-1' />
+                                                    Description
+                                                </div>
+                                                <div className='min-h-[100px]'>
+                                                    {(item.description.length > 230 && fullDesc[index]) ? item.description.slice(0, 230) + '...' : item.description}
+                                                    {item.description.length > 230 && <span className="ml-1 text-sky-500 cursor-pointer" onClick={() => setFullDesc(prevState => [...prevState.slice(0, index), !prevState[index], ...prevState.slice(dropData.length - index)])}>{fullDesc[index] ? 'See more' : 'See less'}</span>}
+                                                </div>
                                             </div>
-                                            <div className="avatar-group -space-x-6">
-                                                {item.collecters.filter((user: string, i: number) => i < 4).map((user: string) => {
-                                                    return (
-                                                        <div className="avatar" key={user}>
-                                                            <div className="w-12">
-                                                                <img src={user} />
+                                            <div className=''>
+                                                <div className='badge badge-outline badge-info badge-sm'>
+                                                    <Icon icon="ph:link" className='mr-1' />
+                                                    Contract Address
+                                                </div>
+                                                <div className='flex items-center gap-2'>
+                                                    <div className='overflow-hidden text-ellipsis'>{item.contractAddress}</div>
+                                                    <Icon icon="ph:link" fontSize={18} className="w-4 cursor-pointer" onClick={() => { window.open(NetworkList.find(item => item.id === chain?.id)?.explorer + item.contractAddress) }} />
+                                                </div>
+                                            </div>
+                                            <div className=''>
+                                                <div className='badge badge-outline badge-info badge-sm'>
+                                                    <Icon icon="fluent:apps-list-detail-24-regular" className='mr-1' />
+                                                    Details
+                                                </div>
+                                                <div className='flex items-center gap-2'>
+                                                    <div className='badge badge-primary text-white badge-sm'>ERC-1155</div>
+                                                    <div className='badge badge-warning text-white badge-sm'>{item.royalFee}% Fee</div>
+                                                    {NetworkList.map(item => item.id).includes(chain?.id as number) && <div className='badge badge-success text-white badge-sm'>{item.pricePerToken === 0 ? 'Free' : `${item.pricePerToken} ${NetworkList.find(item => item.id === chain?.id)?.currency}`}</div>}
+                                                </div>
+                                            </div>
+                                            <div className=''>
+                                                <div className='badge badge-outline badge-info badge-sm'>
+                                                    <Icon icon="icon-park-outline:time" className='mr-1' />
+                                                    Ends in
+                                                </div>
+                                                <div className="flex flex-wrap gap-5">
+                                                    {isEnded ? (
+                                                        <div className='badge badge-error text-white mt-1.5'>This drop has been ended.</div>
+                                                    ) : (
+                                                        [daysStyle, hoursStyle, minutesStyle, secondsStyle].map((item, index) => {
+                                                            return (
+                                                                <div className='text-gray-500' key={item}>
+                                                                    <span className="countdown text-2xl text-sky-500 mr-1">
+                                                                        <span style={item}></span>
+                                                                    </span>
+                                                                    {durationUnitList[index]}
+                                                                </div>
+                                                            )
+                                                        })
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className=''>
+                                                <div className='badge badge-outline badge-info badge-sm'>
+                                                    <Icon icon="ph:users-duotone" className='mr-1' />
+                                                    Collected by
+                                                </div>
+                                                <div className="avatar-group -space-x-6">
+                                                    {item.collecters.filter((user: string, i: number) => i < 4).map((user: string) => {
+                                                        return (
+                                                            <div className="avatar" key={user}>
+                                                                <div className="w-12">
+                                                                    <img src={user} />
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                    {item.collecters.length > 4 && (
+                                                        <div className="avatar placeholder">
+                                                            <div className="w-12 bg-neutral-focus text-neutral-content">
+                                                                <span>+99</span>
                                                             </div>
                                                         </div>
-                                                    )
-                                                })}
-                                                {item.collecters.length > 4 && (
-                                                    <div className="avatar placeholder">
-                                                        <div className="w-12 bg-neutral-focus text-neutral-content">
-                                                            <span>+99</span>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                {item.collecters.length === 0 && (
-                                                    <div className='badge badge-error text-white my-[18px]'>There is no collecters for now.</div>
-                                                )}
+                                                    )}
+                                                    {item.collecters.length === 0 && (
+                                                        <div className='badge badge-error text-white my-[18px]'>There is no collecters for now.</div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='divider my-0' />
-                                        <div className='flex items-center gap-2'>
-                                            <label className="input-group w-full">
-                                                <button className="btn btn-sm btn-info text-white" onClick={() => handleMinus(index)}><Icon icon="ic:round-minus" /></button>
-                                                <input
-                                                    type="number"
-                                                    placeholder="10"
-                                                    className="input input-bordered input-info input-ghost input-sm max-w-[100px]"
-                                                    value={buyAmountList[index]}
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                        const value = event.target.valueAsNumber;
-                                                        if (
-                                                            value <=
-                                                            item.maxEditions[getNetworkIndex(chain?.id as number)] - item.buyedAmount[getNetworkIndex(chain?.id as number)]
-                                                        ) {
-                                                            setBuyAmountList((prevState) => [
-                                                                ...prevState.slice(0, index),
-                                                                value,
-                                                                ...prevState.slice(index + 1),
-                                                            ]);
+                                            <div className='divider my-0' />
+                                            <div className='flex items-center gap-2'>
+                                                <label className="input-group w-full">
+                                                    <button className="btn btn-sm btn-info text-white" onClick={() => handleMinus(index)}><Icon icon="ic:round-minus" /></button>
+                                                    <input
+                                                        type="number"
+                                                        placeholder="10"
+                                                        className="input input-bordered input-info input-ghost input-sm max-w-[100px]"
+                                                        value={buyAmountList[index]}
+                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                            const value = event.target.valueAsNumber;
+                                                            if (
+                                                                value <=
+                                                                item.maxEditions[getNetworkIndex(chain?.id as number)] - item.buyedAmount[getNetworkIndex(chain?.id as number)]
+                                                            ) {
+                                                                setBuyAmountList((prevState) => [
+                                                                    ...prevState.slice(0, index),
+                                                                    value,
+                                                                    ...prevState.slice(index + 1),
+                                                                ]);
+                                                            }
+                                                        }}
+                                                    />
+                                                    <button className="btn btn-sm btn-info text-white" onClick={() => handlePlus(index)}><Icon icon="ic:round-plus" /></button>
+                                                </label>
+                                                <button
+                                                    className="btn btn-info btn-sm text-white"
+                                                    disabled={
+                                                        isEnded ||
+                                                        (item.buyedAmount[getNetworkIndex(chain?.id as number)] + Number(buyAmountList[index])) >
+                                                        item.maxEditions[getNetworkIndex(chain?.id as number)] ||
+                                                        buyAmountList[index] === 0
+                                                    }
+                                                    onClick={() => {
+                                                        if (!isEnded && buyAmountList[index] > 0) {
+                                                            handleClaim(
+                                                                item.contractAddress,
+                                                                buyAmountList[index],
+                                                                item.buyedAmount,
+                                                                item.pricePerToken,
+                                                                item.id
+                                                            );
                                                         }
                                                     }}
-                                                />
-                                                <button className="btn btn-sm btn-info text-white" onClick={() => handlePlus(index)}><Icon icon="ic:round-plus" /></button>
-                                            </label>
-                                            <button
-                                                className="btn btn-info btn-sm text-white"
-                                                disabled={
-                                                    isEnded ||
-                                                    (item.buyedAmount[getNetworkIndex(chain?.id as number)] + Number(buyAmountList[index])) >
-                                                    item.maxEditions[getNetworkIndex(chain?.id as number)] ||
-                                                    buyAmountList[index] === 0
-                                                }
-                                                onClick={() => {
-                                                    if (!isEnded && buyAmountList[index] > 0) {
-                                                        handleClaim(
-                                                            item.contractAddress,
-                                                            buyAmountList[index],
-                                                            item.buyedAmount,
-                                                            item.pricePerToken,
-                                                            item.id
-                                                        );
+                                                >
+                                                    {isEnded
+                                                        ? 'Ended Drop'
+                                                        : !item.network.includes(
+                                                            NetworkList.find((item) => item.id === chain?.id)?.network || ''
+                                                        )
+                                                            ? 'Deploy Drop'
+                                                            : (Number(item.buyedAmount[getNetworkIndex(chain?.id as number)]) +
+                                                                Number(buyAmountList[index])) >
+                                                                Number(item.maxEditions[getNetworkIndex(chain?.id as number)])
+                                                                ? 'Rate Limited'
+                                                                : 'Claim'
                                                     }
-                                                }}
-                                            >
-                                                {isEnded
-                                                    ? 'Ended Drop'
-                                                    : !item.network.includes(
-                                                        NetworkList.find((item) => item.id === chain?.id)?.network || ''
-                                                    )
-                                                        ? 'Deploy Drop'
-                                                        : (Number(item.buyedAmount[getNetworkIndex(chain?.id as number)]) +
-                                                            Number(buyAmountList[index])) >
-                                                            Number(item.maxEditions[getNetworkIndex(chain?.id as number)])
-                                                            ? 'Rate Limited'
-                                                            : 'Claim'
-                                                }
-                                            </button>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </Element>
                             )
                         })}
                     </div>

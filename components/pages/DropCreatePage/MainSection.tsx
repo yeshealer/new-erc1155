@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconButton, Button } from '@/components/globalstyle';
 import { Icon } from '@iconify/react';
-import { CheckboxProps, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import ModelViewer from '@/components/widgets/ModelViewer';
 import { currencyData, dateData, metaDataOptions } from '@/constants/main';
 import { DropDetailTypes, DurationUnit, metaDataTypes } from '@/constants/type';

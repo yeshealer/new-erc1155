@@ -55,6 +55,8 @@ export default function MainSection() {
     const [buyAmountList, setBuyAmountList] = useState<number[]>([]);
     const [isClaiming, setIsClaiming] = useState(false);
 
+    const [remainTimeCounter, setRemainTimeCounter] = useState<number[]>([]);
+
     const handleCopyAddress = (address: string, index: number) => {
         navigator.clipboard.writeText(address)
         const defaultIcons = ownerIcon
@@ -143,60 +145,37 @@ export default function MainSection() {
     useEffect(() => {
         if (!dropData) return;
         const counterTime = dropData.map((item: any) => {
-            const remainTime = (Number(item.endTimestamp) * 1000 - Date.now()) / 1000;
-            const days = Math.floor(remainTime / 3600 / 24);
-            const hours = Math.floor(remainTime / 3600) % 24;
-            const minutes = Math.floor((remainTime % 3600) / 60);
-            const seconds = Math.floor(remainTime % 60);
-            if (days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0) {
-                return { days: Number.NEGATIVE_INFINITY, hours: Number.NEGATIVE_INFINITY, minutes: Number.NEGATIVE_INFINITY, seconds: Number.NEGATIVE_INFINITY }
-            }
-            return { days, hours, minutes, seconds: 59 }
+            const remainTime = Math.floor((Number(item.endTimestamp) * 1000 - Date.now()) / 1000);
+            return remainTime
         })
-        setDayCounter(counterTime.map((item: any) => item.days));
-        setHoursCounter(counterTime.map((item: any) => item.hours));
-        setMinutesCounter(counterTime.map((item: any) => item.minutes));
-        setSecondsCounter(counterTime.map((item: any) => item.seconds));
+        setRemainTimeCounter(counterTime)
     }, [dropData])
 
     useEffect(() => {
-        const intervals: any[] = [];
+        const updateCounter = (prevValue: number[]) => {
+            if (!Array.isArray(prevValue) || prevValue.length <= 0) return [];
+            const remainTime = prevValue.map((item: number) => {
+                const remainingTime = item - 1
+                const newDays = Math.floor(remainingTime / 86400);
+                const newHours = Math.floor((remainingTime % 86400) / 3600);
+                const newMinutes = Math.floor((remainingTime % 3600) / 60);
+                const newSeconds = remainingTime % 60;
 
-        const updateCounter = (counter: number[], interval: any, defaultValue: number) => {
-            if (Array.isArray(counter) && counter.length > 0) {
-                const updatedValue = counter.map((num) => {
-                    if (num === Number.NEGATIVE_INFINITY) {
-                        return Number.NEGATIVE_INFINITY;
-                    } else if (num > 0) {
-                        return num - 1
-                    } else {
-                        return defaultValue
-                    }
-                });
-                return updatedValue;
-            }
-            return [];
-        };
+                return { remainingTime, newDays, newHours, newMinutes, newSeconds }
+            })
+            setDayCounter(remainTime.map(item => item.newDays))
+            setHoursCounter(remainTime.map(item => item.newHours))
+            setMinutesCounter(remainTime.map(item => item.newMinutes))
+            setSecondsCounter(remainTime.map(item => item.newSeconds))
+            return remainTime.map(item => item.remainingTime)
+        }
 
-        intervals.push(setInterval(() => {
-            setDayCounter((value) => updateCounter(value, intervals[0], 0));
-        }, 86400000));
 
-        intervals.push(setInterval(() => {
-            setHoursCounter((value) => updateCounter(value, intervals[1], 23));
-        }, 3600000));
+        const timeInterval = setInterval(() => {
+            setRemainTimeCounter((value) => updateCounter(value))
+        }, 1000);
 
-        intervals.push(setInterval(() => {
-            setMinutesCounter((value) => updateCounter(value, intervals[2], 59));
-        }, 60000));
-
-        intervals.push(setInterval(() => {
-            setSecondsCounter((value) => updateCounter(value, intervals[3], 59));
-        }, 1000));
-
-        return () => {
-            intervals.forEach((interval) => clearInterval(interval));
-        };
+        return () => clearInterval(timeInterval);
     }, []);
 
     return (

@@ -30,8 +30,8 @@ export default function useDrop() {
             const collectionReference = dropDB.collection("DropCollection");
             if (!collectionReference) return;
             const data = await collectionReference.get();
-            console.log(data)
             const dropData = data.data.map(item => item.data)
+            console.log(dropData)
             const dropDataLatest: any[] = []
             for (let i = 0; i < dropData.length; i++) {
                 const imgLink = await get3DImageLink(dropData[i].baseURI)

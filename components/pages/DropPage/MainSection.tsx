@@ -54,7 +54,6 @@ export default function MainSection() {
     const [secondsCounter, setSecondsCounter] = useState<number[]>([]);
     const [buyAmountList, setBuyAmountList] = useState<number[]>([]);
     const [isClaiming, setIsClaiming] = useState(false);
-
     const [remainTimeCounter, setRemainTimeCounter] = useState<number[]>([]);
 
     const handleCopyAddress = (address: string, index: number) => {

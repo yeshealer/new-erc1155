@@ -11,8 +11,8 @@ export interface DropDetailTypes {
     supply: number,
     royalty: number,
     duration: number,
-    durationUnit: DurationUnit,
-    metadatas: string[]
+    durationUnit?: DurationUnit,
+    metadatas?: string[]
 }
 
 export interface dateDataTypes {

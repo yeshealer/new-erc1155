@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { DialogHTMLAttributes, useEffect, useState } from 'react'
 import { IconButton, Button } from "@/components/globalstyle";
 import { Stack } from '@mui/material'
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,6 +9,7 @@ import ModelViewer from '@/components/widgets/ModelViewer';
 import { NetworkList } from '@/constants/main';
 import useNetwork from '@/hooks/useNetwork';
 import { useAccount, useNetwork as useNetworkInfo } from 'wagmi';
+import { DropDetailTypes, DurationUnit } from '@/constants/type';
 
 const defaultDeployDropInfo = {
     newNetwork: '',
@@ -26,7 +27,7 @@ const defaultDeployDropInfo = {
     startTimestamp: 0,
     endTimestamp: 0,
     newDropId: [] as string[],
-    contractAddress: ''
+    contractAddress: '',
 }
 
 const durationUnitList = ['days', 'hours', 'min', 'sec']
@@ -34,7 +35,7 @@ const durationUnitList = ['days', 'hours', 'min', 'sec']
 export default function MainSection() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { getDropData, claim } = useDrop();
+    const { getDropData, claim, createDrop } = useDrop();
     const {
         getNetworkIndex,
         changeNetwork
@@ -54,6 +55,7 @@ export default function MainSection() {
     const [secondsCounter, setSecondsCounter] = useState<number[]>([]);
     const [buyAmountList, setBuyAmountList] = useState<number[]>([]);
     const [isClaiming, setIsClaiming] = useState(false);
+    const [isDeploying, setIsDeploying] = useState(false);
     const [remainTimeCounter, setRemainTimeCounter] = useState<number[]>([]);
 
     const handleCopyAddress = (address: string, index: number) => {
@@ -65,9 +67,14 @@ export default function MainSection() {
         }, 1500)
     }
 
+    const handleCloseNetworkModal = () => {
+        if (typeof window !== 'undefined')
+            (window.document.getElementById('networkModal') as HTMLDialogElement).close();
+    }
+
     const handleClickAddNetworkModal = async (networkId: number, title: string, description: string, symbol: string, maxEdition: number[], tokenURI: string, price: number, duration: number, royalFee: number, id: string, network: string[], startTimestamp: number, endTimestamp: number, dropId: string[], contractAddress: string) => {
         if (chain?.id !== networkId) {
-            changeNetwork(networkId)
+            await changeNetwork(networkId)
         }
         const newNetwork = NetworkList.find(item => item.id === networkId)?.network || ''
         const supply = Math.max.apply(null, maxEdition);
@@ -90,6 +97,8 @@ export default function MainSection() {
             newDropId: dropId,
             contractAddress: contractAddress
         })
+        if (typeof window !== 'undefined')
+            (window.document.getElementById('networkModal') as HTMLDialogElement).showModal();
     }
 
     const handleMinus = (index: number) => {
@@ -106,6 +115,37 @@ export default function MainSection() {
         setIsClaiming(true);
         await claim(contractAddress, buyAmount, buyedAmount, pricePerToken, id);
         setIsClaiming(false);
+    }
+
+    const newDeployNetwork = async () => {
+        try {
+            const dropDetail: DropDetailTypes = {
+                title: newDeployDropInfo.newTitle,
+                symbol: newDeployDropInfo.newsymbol,
+                description: newDeployDropInfo.newDesc,
+                supply: newDeployDropInfo.newsupply,
+                royalty: newDeployDropInfo.newRoyalFee,
+                duration: newDeployDropInfo.newDuration,
+            }
+            const tokenURI = newDeployDropInfo.newTokenURI
+            const price = newDeployDropInfo.newPrice
+            const duration = newDeployDropInfo.newDuration
+            const newDropID = newDeployDropInfo.newDropID
+            const network = newDeployDropInfo.network
+            const newMaxEdition = newDeployDropInfo.maxEditions
+            const newInfo = {
+                newDropID: newDropID,
+                newNetwork: network,
+                newMaxEdition: newMaxEdition,
+                newStartTimeStamp: newDeployDropInfo.startTimestamp,
+                newEndTimeStamp: newDeployDropInfo.endTimestamp
+            }
+            setIsDeploying(true)
+            await createDrop(dropDetail, tokenURI, price, duration, false, setIsDeploying, newInfo)
+            handleCloseNetworkModal();
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const getInitialData = async () => {
@@ -128,7 +168,7 @@ export default function MainSection() {
 
     useEffect(() => {
         getInitialData();
-    }, [chain?.id])
+    }, [chain?.id, isDeploying])
 
     useEffect(() => {
         setSelectedDrop(searchParams.get('address') || '')
@@ -339,9 +379,9 @@ export default function MainSection() {
                                                     Collected by
                                                 </div>
                                                 <div className="avatar-group -space-x-6">
-                                                    {item.collecters.filter((user: string, i: number) => i < 4).map((user: string) => {
+                                                    {item.collecters.filter((user: string, i: number) => i < 4).map((user: string, i: number) => {
                                                         return (
-                                                            <div className="avatar" key={user}>
+                                                            <div className="avatar" key={i}>
                                                                 <div className="w-12">
                                                                     <img src={user} />
                                                                 </div>
@@ -427,6 +467,39 @@ export default function MainSection() {
                     </div>
                 </Stack>
             )}
-        </Stack>
+            <dialog id="networkModal" className="modal">
+                {isDeploying ? (
+                    <div className="modal-box">
+                        <Stack
+                            justifyContent='center'
+                            alignItems='center'
+                        >
+                            <span className="loading loading-infinity w-32 text-info"></span>
+                            <div className='text-sky-500 font-bold text-2xl'>Deploying...</div>
+                        </Stack>
+                    </div>
+                ) : (
+                    <div className="modal-box">
+                        <div>
+                            <div className='text-xl font-semibold mb-4'>Deploy the drop on <span className='text-sky-500 font-bold'>{newDeployDropInfo.newNetwork}</span></div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Title:</span> {newDeployDropInfo.newTitle}</div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Description:</span> {newDeployDropInfo.newDesc.length > 100 ? newDeployDropInfo.newDesc.slice(0, 100) + '...' : newDeployDropInfo.newDesc}</div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Supply:</span> {newDeployDropInfo.newsupply}</div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Symbol:</span> {newDeployDropInfo.newsymbol}</div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Token Price:</span> {newDeployDropInfo.newPrice === 0 ? 'Free' : newDeployDropInfo.newPrice}</div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Duration:</span> {newDeployDropInfo.newDuration} second(s)</div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Owner:</span> {address}</div>
+                            <div className='text-sm'><span className="badge badge-sm badge-ghost">Royalties:</span> {newDeployDropInfo.newRoyalFee}%</div>
+                        </div>
+                        <div className="modal-action">
+                            <button className="btn btn-info btn-sm text-white" onClick={() => newDeployNetwork()}>Deploy</button>
+                        </div>
+                        <form method="dialog" className="modal-backdrop">
+                            <div className='absolute right-4 top-4 z-10 cursor-pointer bg-sky-400 hover:bg-sky-300 rounded-full text-white p-1 w-6 h-6 transition-all' onClick={() => handleCloseNetworkModal()}><Icon icon="ic:round-close" /></div>
+                        </form>
+                    </div >
+                )}
+            </dialog >
+        </Stack >
     )
 }

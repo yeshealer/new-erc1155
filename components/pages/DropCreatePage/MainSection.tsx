@@ -34,7 +34,7 @@ export default function MainSection() {
     const [prevUrl, setPrevUrl] = useState<string>('');
     const [fileImg, setFileImg] = useState('');
     const [dropDetail, setDropDetail] = useState<DropDetailTypes>(defaultDropDetail);
-    const [price, setPrice] = useState(0);
+    const [price, setPrice] = useState<number>(0);
     const [metaDataLabel, setMetaDataLabel] = useState('');
     const [selectedMetaDatas, setSelectedMetaDatas] = useState<metaDataTypes[]>([]);
     const [isFree, setIsFree] = useState(true);
@@ -89,7 +89,7 @@ export default function MainSection() {
             setIsUploading(false);
             setIsMinting(true);
             const duration = dropDetail.duration * (dateData.find(({ value }) => value === dropDetail.durationUnit)?.time || 0);
-            await createDrop(dropDetail, tokenURI, price, duration, setIsMinting)
+            await createDrop(dropDetail, tokenURI, price, duration, true, setIsMinting)
         } catch (err) {
             console.log(err)
             setIsUploading(false)
@@ -360,10 +360,10 @@ export default function MainSection() {
                                         type="number"
                                         placeholder="Enter Supply"
                                         className="input input-bordered input-info input-sm w-full"
-                                        value={price ? price : ''}
+                                        value={price >= 0 ? price : ''}
                                         disabled={isFree}
                                         onChange={(event) => {
-                                            const value = Number(event.target.value)
+                                            const value = parseFloat(event.target.value)
                                             setPrice(value)
                                         }}
                                     />

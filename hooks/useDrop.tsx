@@ -44,7 +44,7 @@ export default function useDrop() {
         }
     }
 
-    const createDrop = async (dropDetail: DropDetailTypes, tokenURI: string, price: number, duration: number, setIsMinting: Dispatch<SetStateAction<boolean>>) => {
+    const createDrop = async (dropDetail: DropDetailTypes, tokenURI: string, price: number, duration: number, isNew: boolean, setIsMinting: Dispatch<SetStateAction<boolean>>, newInfo?: any) => {
         if (!dropDetail || !tokenURI || price < 0 || !duration) return;
         const bigPrice = price === 0 ? 0 : ethers.parseEther(price.toString())
         const startTimestamp = Date.now()
@@ -62,8 +62,8 @@ export default function useDrop() {
                     tokenURI,
                     dropDetail.supply,
                     bigPrice,
-                    Math.floor(startTimestamp / 1000),
-                    Math.floor(endTimestamp / 1000),
+                    (!isNew && newInfo) ? newInfo.newStartTimeStamp : Math.floor(startTimestamp / 1000),
+                    (!isNew && newInfo) ? newInfo.newEndTimeStamp : Math.floor(endTimestamp / 1000),
                     duration,
                     address,
                     dropDetail.royalty * 100
@@ -74,9 +74,36 @@ export default function useDrop() {
             const txnHash = res.hash;
             const result = await waitForTransaction({ hash: txnHash });
             if (result.status === 'success') {
-                await saveDropDB(tokenURI, startTimestamp, endTimestamp, price, duration, dropDetail, setIsMinting)
+                if (isNew) {
+                    await saveDropDB(tokenURI, startTimestamp, endTimestamp, price, duration, dropDetail, setIsMinting)
+                } else if (newInfo) {
+                    await addDropDB(newInfo, dropDetail.supply, setIsMinting)
+                }
             }
+        }).catch((err) => {
+            console.log(err)
+            setIsMinting(false)
         })
+    }
+
+    const addDropDB = async (newInfo: any, supply: number, setIsMinting: Dispatch<SetStateAction<boolean>>) => {
+        if (!chain?.id || !newInfo) return;
+        try {
+            const id = newInfo.newDropID;
+            const newNetwork = newInfo.newNetwork;
+            newNetwork.push(NetworkList.find(item => item.id === chain?.id)?.network)
+            const newMaxEditions = newInfo.newMaxEdition
+            newMaxEditions[getNetworkIndex(chain?.id)] = supply
+
+            console.log(newNetwork, newMaxEditions)
+
+            await dropDatabase.record(id).call('updateNetwork', [newNetwork])
+            await dropDatabase.record(id).call('updateMaxEdition', [newMaxEditions])
+            setIsMinting(false)
+        } catch (err) {
+            console.log(err)
+            setIsMinting(false)
+        }
     }
 
     const saveDropDB = async (tokenURI: string, startTimestamp: number, endTimestamp: number, price: number, duration: number, dropDetail: DropDetailTypes, setIsMinting: Dispatch<SetStateAction<boolean>>) => {
@@ -89,7 +116,6 @@ export default function useDrop() {
                 args: [address]
             }) as `0x${string}`[]
             await createDropSchema();
-            const dropDatabase = dropDB.collection('DropCollection');
             const id = tokenURI + startTimestamp;
             const editionArray = NetworkList.map(item => {
                 if (item.id === chain?.id) {

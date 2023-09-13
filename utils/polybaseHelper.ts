@@ -187,6 +187,10 @@ export const createDropSchema = async () => {
                 this.collecters = updatedCollecters;
             }
 
+            updateContractAddress(updatedContractAddress: string) {
+                this.contractAddress = updatedContractAddress;
+            }
+
             del () {
                 selfdestruct();
             }

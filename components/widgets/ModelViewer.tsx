@@ -20,6 +20,6 @@ export default function ModelViewer({
     prevURL
 }: ModelViewerProps) {
     return (
-        <model-viewer style={{ width: '100%', height: '100%', background: '#e0f2fe', borderRadius: '12px', minHeight: '200px' }} src={prevURL} camera-controls="true" touch-action="pan-y" ar-status="not-presenting" />
+        <model-viewer style={{ width: '99%', height: '100%', background: '#e0f2fe', borderRadius: '12px', minHeight: '200px' }} src={prevURL} camera-controls="true" touch-action="pan-y" ar-status="not-presenting" />
     )
 }

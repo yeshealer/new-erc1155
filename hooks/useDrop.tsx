@@ -1,18 +1,25 @@
-import { readContract, writeContract, waitForTransaction } from '@wagmi/core'
+import { readContract, readContracts, writeContract, waitForTransaction } from '@wagmi/core'
 import DropFactoryABI from '@/constants/abi/DropFactory.json'
 import { DropDetailTypes } from '@/constants/type'
 import { ethers } from 'ethers'
 import { useAccount, useNetwork as useNetworkInfo } from 'wagmi'
 import { createDropSchema, getDropDB } from '@/utils/polybaseHelper'
 import { NetworkList } from '@/constants/main'
-import { Dispatch, SetStateAction, useEffect } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import useIPFS from './useIPFS'
 import DropABI from '@/constants/abi/Drop.json'
+import FetaMarketABI from '@/constants/abi/FetaMarket.json'
 import useNetwork from './useNetwork'
 
 export default function useDrop() {
     const dropFactoryAddress = process.env.DROP_FACTORY_CONTRACT as `0x${string}`
     const implementationAddress = process.env.DROP_IMPLEMENTATION_CONTRACT as `0x${string}`
+    const fetaMarketAddress = process.env.FETA_MARKET_CONTRACT as `0x${string}`
+
+    const fetaMarketContract = {
+        address: fetaMarketAddress,
+        abi: FetaMarketABI
+    }
 
     const { address } = useAccount();
     const { chain } = useNetworkInfo();
@@ -31,7 +38,6 @@ export default function useDrop() {
             if (!collectionReference) return;
             const data = await collectionReference.get();
             const dropData = data.data.map(item => item.data)
-            console.log(dropData)
             const dropDataLatest: any[] = []
             for (let i = 0; i < dropData.length; i++) {
                 const imgLink = await get3DImageLink(dropData[i].baseURI)
@@ -230,9 +236,84 @@ export default function useDrop() {
         }
     }
 
+    const generateArray = (n: number) => {
+        return Array.from({ length: n }, (_, index) => index + 1)
+    }
+
+    const getSalesData = async () => {
+        try {
+            const saleCount = await readContract({
+                ...fetaMarketContract,
+                functionName: 'salesId'
+            }) as BigInt
+            const arr = generateArray(Number(saleCount))
+            const totalSalesContracts = arr.map(item => {
+                return {
+                    ...fetaMarketContract,
+                    functionName: 'sales',
+                    args: [item]
+                }
+            })
+            const totalSaleInfo = await readContracts({
+                contracts: totalSalesContracts as any
+            }) as any
+            const saleInfo = totalSaleInfo.filter((item: any) => !item.result[5]).map((item: any) => item.result)
+            const saleData = saleInfo.map((item: any) => {
+                return {
+                    seller: item[0],
+                    token: item[1],
+                    tokenId: item[2],
+                    amount: item[3],
+                    price: item[4],
+                    isTotalSold: item[5]
+                }
+            })
+            return saleData
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const getOfferData = async () => {
+        try {
+            const listCount = await readContract({
+                ...fetaMarketContract,
+                functionName: 'offerId'
+            }) as BigInt
+            const arr = generateArray(Number(listCount))
+            const totalListContracts = arr.map(item => {
+                return {
+                    ...fetaMarketContract,
+                    functionName: 'offerInfo',
+                    args: [item]
+                }
+            })
+            const totalListInfo = await readContracts({
+                contracts: totalListContracts as any
+            }) as any
+            const listInfo = totalListInfo.filter((item: any) => !item.result[5]).map((item: any) => item.result)
+            const listData = listInfo.map((item: any) => {
+                return {
+                    offerAddres: item[0],
+                    token: item[1],
+                    tokenId: item[2],
+                    offerAmount: item[3],
+                    offerPrice: item[4],
+                    ownerAddress: item[5],
+                    isAccepted: item[6]
+                }
+            })
+            return listData
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     return {
         createDrop,
         getDropData,
-        claim
+        claim,
+        getSalesData,
+        getOfferData
     }
 }

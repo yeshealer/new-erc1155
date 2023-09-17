@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useSnackbar } from 'notistack';
 import { metaDataOptions } from '@/constants/main';
 import { metaDataTypes } from '@/constants/type';
-import { infoVariant } from '@/utils/stickyHelper';
+import { infoVariant, successVariant } from '@/utils/stickyHelper';
 import useIPFS from '@/hooks/useIPFS';
 import useCollection from '@/hooks/useCollection';
 import useNFT from '@/hooks/useNFT';
@@ -85,6 +85,9 @@ export default function MainSection() {
             setIsMinting(true);
             await mint(collectionData, tokenURI, nftSupply, nftName, nftDescription);
             setMetaDataLabel('');
+            setSelectedMetaDatas([])
+            router.push('/create');
+            enqueueSnackbar('Successfully minted!', { variant: successVariant })
             setIsMinting(false);
         } catch (err) {
             console.log(err)

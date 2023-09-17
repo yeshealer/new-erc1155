@@ -3,7 +3,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import Stack from '@mui/material/Stack'
 import { IconButton } from '@/components/globalstyle';
 import { Icon } from '@iconify/react';
-// import useNetwork from '@/hooks/useNetwork';
 import useCollection from '@/hooks/useCollection';
 import { useAccount, useNetwork } from 'wagmi';
 import { Player } from '@lottiefiles/react-lottie-player';
@@ -138,7 +137,7 @@ export default function MainSection() {
                                 )}
                             </Stack>
                         ) : (nftInfo && nftInfo.length > 0) && (
-                            <Stack direction='row' justifyContent='space-between' flexWrap='wrap' gap={4}>
+                            <Stack direction='row' justifyContent='space-between' flexWrap='wrap' gap={4} my={2}>
                                 {nftInfo.map((item: any) => {
                                     return (
                                         <div className="card card-compact w-96 bg-base-100 shadow-xl" key={item.nftName + item.tokenId}>

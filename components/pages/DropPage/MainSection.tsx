@@ -246,7 +246,7 @@ export default function MainSection() {
                             <Icon icon="solar:undo-left-bold" fontSize={20} />
                         </IconButton>
                         <div className='flex flex-col sm:flex-row gap-2 items-end'>
-                            <Button className='bg-lime-500 hover:bg-lime-400'>
+                            <Button className='bg-lime-500 hover:bg-lime-400' onClick={() => router.push('/drop/marketplace')}>
                                 <Icon icon="mdi:marketplace" fontSize={20} />
                                 Marketplace
                             </Button>
@@ -256,7 +256,7 @@ export default function MainSection() {
                             </Button>
                         </div>
                     </Stack>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 my-4 gap-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 my-4 gap-4'>
                         {(dropData && dropData.length > 0) && dropData.map((item: any, index: number) => {
                             const daysStyle: any = { '--value': dayCounter[index] };
                             const hoursStyle: any = { '--value': hoursCounter[index] };

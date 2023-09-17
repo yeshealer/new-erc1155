@@ -151,7 +151,20 @@ export default function MainSection() {
         }
     }
 
-    const selectDrop = () => { }
+    const selectDrop = (i: number) => {
+        const newClickStatus = clickStatus.map((item: boolean, index: number) => {
+            if (i === index) {
+                return !item
+            }
+            return false
+        })
+        setClickStatus(newClickStatus)
+        if (newClickStatus.includes(true)) {
+            setActiveToken(dropData[i])
+        } else {
+            setActiveToken(null)
+        }
+    }
 
     const getInitialData = async () => {
         setIsLoading(true)
@@ -256,7 +269,7 @@ export default function MainSection() {
                         </div>
                     </div>
                     <div className='w-full mt-2'>
-                        <div className='text-sm font-semibold'>Select Network</div>
+                        <div className='text-sm font-semibold'>Select {isDrop ? 'Drops' : 'Collections'}</div>
                         <div className="mockup-window border border-sky-500/50 bg-sky-200/10">
                             <div className='absolute right-4 top-3'>{isDrop ? dropData.length : collectionData.length} available</div>
                             <div className='border-t border-sky-500/50 bg-sky-100 p-2 sm:p-4 md:p-6'>
@@ -274,7 +287,7 @@ export default function MainSection() {
                                                             <Icon icon="icon-park-solid:view-grid-detail" className="text-2xl text-sky-500 font-bold cursor-pointer transition-all z-10 absolute top-2 left-2" onClick={() => handleOpen(i)} />
                                                             <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectNFT(i, token.id, token.tokenURI, token)} />
                                                             <div key={token.imageURL} className={`${clickStatus[i] ? 'border-2 border-sky-500' : 'border-sky-500/50'} border rounded-xl relative`}>
-                                                                <ModelViewer prevURL={token.imageURL} />
+                                                                {/* <ModelViewer prevURL={token.imageURL} /> */}
                                                                 <div className="absolute text-sm font-semibold bottom-2 right-2">{token.supply}</div>
                                                             </div>
                                                         </div>
@@ -297,9 +310,9 @@ export default function MainSection() {
                                                         return (
                                                             <div className="relative" key={item.imageURL}>
                                                                 <Icon icon="icon-park-solid:view-grid-detail" className="text-2xl text-sky-500 font-bold cursor-pointer transition-all z-10 absolute top-2 left-2" onClick={() => handleOpen(item.dropId, item.id)} />
-                                                                <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectDrop()} />
+                                                                <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectDrop(i)} />
                                                                 <div className={`${clickStatus[i] ? 'border-sky-500' : 'border-sky-500/50'} border rounded-xl relative`}>
-                                                                    <ModelViewer prevURL={item.imageURL} />
+                                                                    {/* <ModelViewer prevURL={item.imageURL} /> */}
                                                                     <div className="absolute text-sm font-semibold bottom-2 right-2">{item.amount}</div>
                                                                 </div>
                                                             </div>
@@ -323,7 +336,7 @@ export default function MainSection() {
                         </div>
                     </div>
                     <div className='w-full mt-2'>
-                        <div className='text-sm font-semibold'>Select Network</div>
+                        <div className='text-sm font-semibold'>Enter Amount</div>
                         <div className='w-full flex items-center gap-10'>
                             <input type="number" placeholder="Enter amount" value={amount} onChange={(event) => setAmount(event.target.value)} className="input input-bordered input-info w-full" />
                         </div>

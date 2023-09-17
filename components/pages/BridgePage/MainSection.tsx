@@ -151,7 +151,7 @@ export default function MainSection() {
         }
     }
 
-    const selectDrop = () => {}
+    const selectDrop = () => { }
 
     const getInitialData = async () => {
         setIsLoading(true)
@@ -270,7 +270,7 @@ export default function MainSection() {
                                             collectionData && collectionData.length > 0 ? (
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                                                     {collectionData.map((token, i) => (
-                                                        <div className="relative">
+                                                        <div className="relative" key={token.imageURL}>
                                                             <Icon icon="icon-park-solid:view-grid-detail" className="text-2xl text-sky-500 font-bold cursor-pointer transition-all z-10 absolute top-2 left-2" onClick={() => handleOpen(i)} />
                                                             <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectNFT(i, token.id, token.tokenURI, token)} />
                                                             <div key={token.imageURL} className={`${clickStatus[i] ? 'border-2 border-sky-500' : 'border-sky-500/50'} border rounded-xl relative`}>
@@ -295,9 +295,9 @@ export default function MainSection() {
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                                                     {dropData.map((item, i) => {
                                                         return (
-                                                            <div className="relative">
+                                                            <div className="relative" key={item.imageURL}>
                                                                 <Icon icon="icon-park-solid:view-grid-detail" className="text-2xl text-sky-500 font-bold cursor-pointer transition-all z-10 absolute top-2 left-2" onClick={() => handleOpen(item.dropId, item.id)} />
-                                                                <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectDrop()}  />
+                                                                <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectDrop()} />
                                                                 <div className={`${clickStatus[i] ? 'border-sky-500' : 'border-sky-500/50'} border rounded-xl relative`}>
                                                                     <ModelViewer prevURL={item.imageURL} />
                                                                     <div className="absolute text-sm font-semibold bottom-2 right-2">{item.amount}</div>

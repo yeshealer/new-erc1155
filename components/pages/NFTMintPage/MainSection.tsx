@@ -10,7 +10,8 @@ import { infoVariant, successVariant } from '@/utils/stickyHelper';
 import useIPFS from '@/hooks/useIPFS';
 import useCollection from '@/hooks/useCollection';
 import useNFT from '@/hooks/useNFT';
-import ModelViewer from '@/components/widgets/ModelViewer';
+
+const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
 export default function MainSection() {
     const router = useRouter();

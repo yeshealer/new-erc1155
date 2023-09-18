@@ -1,9 +1,9 @@
+import dynamic from 'next/dynamic';
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation';
 import { IconButton, Button } from '@/components/globalstyle';
 import { Icon } from '@iconify/react';
 import { Stack } from '@mui/material';
-import ModelViewer from '@/components/widgets/ModelViewer';
 import { currencyData, dateData, metaDataOptions } from '@/constants/main';
 import { DropDetailTypes, DurationUnit, metaDataTypes } from '@/constants/type';
 import { useNetwork } from 'wagmi';
@@ -11,6 +11,8 @@ import { useSnackbar } from 'notistack';
 import { infoVariant, successVariant, errorVariant } from '@/utils/stickyHelper';
 import useIPFS from '@/hooks/useIPFS';
 import useDrop from '@/hooks/useDrop';
+
+const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
 const defaultDropDetail = {
     title: '',

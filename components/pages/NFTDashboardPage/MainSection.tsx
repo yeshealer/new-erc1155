@@ -7,7 +7,8 @@ import useCollection from '@/hooks/useCollection';
 import { useAccount, useNetwork } from 'wagmi';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { NetworkList } from '@/constants/main';
-import ModelViewer from '@/components/widgets/ModelViewer';
+
+const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
 export default function MainSection() {
     const router = useRouter();

@@ -7,7 +7,6 @@ import { switchNetwork } from '@wagmi/core';
 import { useSnackbar } from 'notistack';
 import { errorVariant } from '@/utils/stickyHelper';
 import { useNetwork } from 'wagmi';
-// import ModelViewer from '@/components/widgets/ModelViewer';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { Icon } from '@iconify/react';
 import { ZERO_ADDRESS } from '@/utils/addressHelper';

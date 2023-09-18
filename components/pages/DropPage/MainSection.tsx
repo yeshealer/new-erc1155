@@ -1,15 +1,17 @@
-import React, { DialogHTMLAttributes, useEffect, useState } from 'react'
+import dynamic from 'next/dynamic';
+import React, { useEffect, useState } from 'react'
 import { IconButton, Button } from "@/components/globalstyle";
 import { Stack } from '@mui/material'
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@iconify/react";
 import useDrop from '@/hooks/useDrop';
 import { Element, animateScroll } from "react-scroll";
-import ModelViewer from '@/components/widgets/ModelViewer';
 import { NetworkList } from '@/constants/main';
 import useNetwork from '@/hooks/useNetwork';
 import { useAccount, useNetwork as useNetworkInfo } from 'wagmi';
-import { DropDetailTypes, DurationUnit } from '@/constants/type';
+import { DropDetailTypes } from '@/constants/type';
+
+const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
 const defaultDeployDropInfo = {
     newNetwork: '',
@@ -267,7 +269,7 @@ export default function MainSection() {
                                 <Element name={item.contractAddress} id={item.contractAddress} key={item.id}>
                                     <div className="card card-compact bg-base-100 shadow-xl shadow-sky-500/20 border border-sky-500/50">
                                         <figure className='relative'>
-                                            {item.imageURL && <ModelViewer prevURL={item.imageURL} />}
+                                            <ModelViewer prevURL={item.imageURL} />
                                         </figure>
                                         <div className="card-body p-1">
                                             <div className=''>

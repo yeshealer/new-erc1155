@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic';
 import Stack from '@mui/material/Stack'
 import { Button, IconButton } from '@/components/globalstyle';
 import { usePathname, useRouter } from 'next/navigation';

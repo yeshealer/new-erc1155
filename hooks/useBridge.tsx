@@ -1,22 +1,25 @@
 import { NetworkList } from '@/constants/main';
 import { getCollectionDB, getDropDB } from '@/utils/polybaseHelper'
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useNetwork as useNetworks } from 'wagmi';
 import { readContract, writeContract, waitForTransaction } from '@wagmi/core'
 import useIPFS from './useIPFS';
 import SampModelABI from '@/constants/abi/SampModel.json'
+import DropABI from '@/constants/abi/Drop.json'
 import { ZERO_ADDRESS } from '@/utils/addressHelper';
 import { ethers } from 'ethers';
 import { enqueueSnackbar } from 'notistack';
 import { errorVariant, successVariant } from '@/utils/stickyHelper';
 import { useEffect } from 'react';
+import useNetwork from './useNetwork';
 
 export default function useBridge() {
     const dropDB = getDropDB();
     const collectionDB = getCollectionDB();
     const { get3DImageLink } = useIPFS();
+    const { getNetworkIndex } = useNetwork();
 
     const { address } = useAccount();
-    const { chain } = useNetwork();
+    const { chain } = useNetworks();
 
     const collectionReference = collectionDB.collection("CollectionData");
     const nftReference = collectionDB.collection("NFTData")
@@ -157,7 +160,6 @@ export default function useBridge() {
     ) => {
         if (!collectionAddress || !selectedTokenId || !amount || !toNetwork || !selectedNFTImage || !activeToken || !selectedCollection || !activeCollection) return;
         try {
-            console.log(collectionAddress, selectedTokenId, amount, toNetwork, selectedNFTImage, activeToken, selectedCollection, activeCollection)
             const collectionContract = {
                 address: collectionAddress,
                 abi: SampModelABI
@@ -234,6 +236,83 @@ export default function useBridge() {
         }
     }
 
+    const dropBridge = async (dropAddress: `0x${string}`, toNetwork: number, amount: string, selectedTokenId: string, dropData: any) => {
+        console.log(dropAddress, toNetwork, amount, selectedTokenId, dropData)
+        const dropContract = {
+            address: dropAddress,
+            abi: DropABI
+        }
+        const dstChainId = NetworkList.find(item => item.id === Number(toNetwork))?.dstChainId
+        const adapterParams = await readContract({
+            ...dropContract,
+            functionName: 'getAdapterParams'
+        })
+        const estimateSendFee = await readContract({
+            ...dropContract,
+            functionName: 'estimateSendFee',
+            args: [dstChainId, address, amount, false, adapterParams]
+        }) as BigInt[]
+        await writeContract({
+            ...dropContract,
+            functionName: 'sendFrom',
+            args: [
+                address,
+                dstChainId,
+                address,
+                amount,
+                address,
+                ZERO_ADDRESS,
+                adapterParams
+            ],
+            value: ethers.parseEther(((Number(estimateSendFee[0]) + 100) / 1e18).toString())
+        }).then(async res => {
+            if (!res.hash) return;
+            const result = await waitForTransaction({ hash: res.hash })
+            if (result.status === 'success') {
+                if (!chain?.id) return;
+                const data = await dropReference.record(selectedTokenId).get();
+                const collecterData = await collecterReference.get();
+
+                const collecterId = selectedTokenId + address + chain?.id
+                const collecterDstId = selectedTokenId + address + toNetwork
+
+                const currentDropData = data.data.buyedAmount
+                currentDropData[getNetworkIndex(chain?.id)] = Number(Number(currentDropData[getNetworkIndex(chain?.id)]) - Number(amount))
+                currentDropData[getNetworkIndex(toNetwork)] = Number(Number(currentDropData[getNetworkIndex(toNetwork)]) + Number(amount))
+                await dropReference.record(selectedTokenId).call('updateBuyedAmount', [currentDropData])
+                const collecterAmount = collecterData.data.find(item => item.data.id === collecterId)?.data.amount
+                const collecterIDs = collecterData.data.find(item => item.data.id === collecterId)?.data.claimId as string[]
+                const index = collecterIDs.findIndex(item => item === dropData.id)
+                collecterAmount[index] = Number(collecterAmount[index]) - Number(amount)
+                await collecterReference.record(collecterId).call('updateAmount', [collecterAmount])
+                if (collecterData.data.map(item => item.data.id).includes(collecterDstId)) {
+                    const collecterDstAmount = collecterData.data.find(item => item.data.id === collecterDstId)?.data.amount
+                    const collecterDstIDs = collecterData.data.find(item => item.data.id === collecterDstId)?.data.claimId as string[]
+                    const idExist = collecterDstIDs.includes(dropData.id)
+                    if (idExist) {
+                        const dstIndex = collecterDstIDs.findIndex(item => item === dropData.id)
+                        collecterDstAmount[dstIndex] = Number(collecterDstAmount[dstIndex]) + Number(amount)
+                        await collecterReference.record(collecterDstId).call('updateAmount', [collecterDstAmount])
+                    } else {
+                        collecterDstAmount.push(Number(amount))
+                        collecterDstIDs.push(dropData.id)
+                        await collecterReference.record(collecterDstId).call('updateAmount', [collecterDstAmount])
+                        await collecterReference.record(collecterDstId).call('updateClaimId', [collecterDstIDs])
+                    }
+                } else {
+                    await collecterReference.create([
+                        collecterDstId,
+                        selectedTokenId,
+                        address as string,
+                        [Number(amount)],
+                        toNetwork,
+                        [dropData.id]
+                    ])
+                }
+            }
+        })
+    }
+
     useEffect(() => {
         (async () => {
             const nftData = await nftReference.get()
@@ -247,6 +326,7 @@ export default function useBridge() {
         selectDropActivity,
         selectCollectionActivity,
         getSpecificDropData,
-        collectionBridge
+        collectionBridge,
+        dropBridge
     }
 }

@@ -47,7 +47,8 @@ export default function MainSection() {
         selectDropActivity,
         selectCollectionActivity,
         getSpecificDropData,
-        collectionBridge
+        collectionBridge,
+        dropBridge
     } = useBridge();
 
     const handleToggle = async (value: string) => {
@@ -62,9 +63,11 @@ export default function MainSection() {
             setSelectedDrop(value)
             const dropData = await selectDropActivity(value)
             if (!dropData) return;
+            const toNetwork = NetworkList.filter(item => (item.id !== chain?.id && dropData.networkList.includes(item.id)))[0]?.id || 0
             setDropData(dropData.dropListByID)
             setAvailableNetworks(dropData.networkList)
             setClickStatus(dropData.dropListByID.map((item: any) => false))
+            setToNetwork(toNetwork)
         } else {
             setSelectedCollection(value);
             const collectionData = await selectCollectionActivity(value);
@@ -113,10 +116,16 @@ export default function MainSection() {
     }
 
     const handleBridge = async () => {
+        setIsBridging(true)
         if (isDrop) {
-
+            await dropBridge(
+                activeToken.contractAddress,
+                toNetwork,
+                amount,
+                selectedDrop,
+                activeToken
+            )
         } else {
-            setIsBridging(true)
             await collectionBridge(
                 collectionAddress,
                 Number(selectedTokenId),
@@ -128,8 +137,9 @@ export default function MainSection() {
                 selectedCollection,
                 activeCollection
             )
-            setIsBridging(false)
         }
+        await getInitialData();
+        setIsBridging(false)
     }
 
     const selectNFT = (i: number, tokenId: string, imageURL: string, token: any) => {
@@ -194,6 +204,8 @@ export default function MainSection() {
     useEffect(() => {
         getInitialData()
     }, [isDrop, chain?.id])
+
+    console.log(networkNum, toNetwork)
 
     return (
         <Stack direction='row' alignItems='center' justifyContent='center' className="px-3">
@@ -287,7 +299,7 @@ export default function MainSection() {
                                                             <Icon icon="icon-park-solid:view-grid-detail" className="text-2xl text-sky-500 font-bold cursor-pointer transition-all z-10 absolute top-2 left-2" onClick={() => handleOpen(i)} />
                                                             <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectNFT(i, token.id, token.tokenURI, token)} />
                                                             <div key={token.imageURL} className={`${clickStatus[i] ? 'border-2 border-sky-500' : 'border-sky-500/50'} border rounded-xl relative`}>
-                                                                {/* <ModelViewer prevURL={token.imageURL} /> */}
+                                                                <ModelViewer prevURL={token.imageURL} />
                                                                 <div className="absolute text-sm font-semibold bottom-2 right-2">{token.supply}</div>
                                                             </div>
                                                         </div>
@@ -312,7 +324,7 @@ export default function MainSection() {
                                                                 <Icon icon="icon-park-solid:view-grid-detail" className="text-2xl text-sky-500 font-bold cursor-pointer transition-all z-10 absolute top-2 left-2" onClick={() => handleOpen(item.dropId, item.id)} />
                                                                 <input type="checkbox" className="cursor-pointer checkbox checkbox-info checkbox-sm absolute z-10 top-2 right-2" checked={clickStatus[i]} onChange={() => selectDrop(i)} />
                                                                 <div className={`${clickStatus[i] ? 'border-sky-500' : 'border-sky-500/50'} border rounded-xl relative`}>
-                                                                    {/* <ModelViewer prevURL={item.imageURL} /> */}
+                                                                    <ModelViewer prevURL={item.imageURL} />
                                                                     <div className="absolute text-sm font-semibold bottom-2 right-2">{item.amount}</div>
                                                                 </div>
                                                             </div>
@@ -343,7 +355,7 @@ export default function MainSection() {
                     </div>
                     <button
                         className='btn btn-info mt-4 justify-center text-white'
-                        disabled={(!isDrop && selectedCollection === '') || (isDrop && selectedDrop === '') || networkNum === 0 || toNetwork === 0 || !clickStatus.includes(true) || amount === '' || (activeToken && activeToken.supply < Number(amount))}
+                        disabled={(!isDrop && selectedCollection === '') || (isDrop && selectedDrop === '') || networkNum === 0 || toNetwork === 0 || !clickStatus.includes(true) || amount === '' || (activeToken && (!isDrop ? Number(activeToken.supply) : Number(activeToken.amount)) < Number(amount))}
                         onClick={() => handleBridge()}
                     >
                         Bridge

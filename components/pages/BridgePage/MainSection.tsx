@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import React, { useEffect, useState } from 'react'
 import { Stack } from '@mui/material'
 import useBridge from '@/hooks/useBridge';
@@ -6,11 +7,12 @@ import { switchNetwork } from '@wagmi/core';
 import { useSnackbar } from 'notistack';
 import { errorVariant } from '@/utils/stickyHelper';
 import { useNetwork } from 'wagmi';
-import ModelViewer from '@/components/widgets/ModelViewer';
+// import ModelViewer from '@/components/widgets/ModelViewer';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { Icon } from '@iconify/react';
-import { Button } from '@/components/globalstyle';
 import { ZERO_ADDRESS } from '@/utils/addressHelper';
+
+const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
 export default function MainSection() {
     const [isDrop, setIsDrop] = useState(false);

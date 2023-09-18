@@ -122,7 +122,7 @@ export default function MainSection() {
                         <div className="tabs mt-2">
                             {exploreTabConfig.map(((item: string, index: number) => {
                                 return (
-                                    <a className={`tab tab-lifted ${index === 0 ? "tab-active" : ''}`}>{item}</a>
+                                    <a key={item} className={`tab tab-lifted ${index === 0 ? "tab-active" : ''}`}>{item}</a>
                                 )
                             }))}
                         </div>

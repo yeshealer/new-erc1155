@@ -77,3 +77,5 @@ export const currencyData = [
         ]
     }
 ]
+
+export const exploreTabConfig = ['All', 'Collectibles', 'Metaverse', 'Virtual Worlds']

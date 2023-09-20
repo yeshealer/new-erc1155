@@ -10,6 +10,7 @@ import useIPFS from './useIPFS'
 import DropABI from '@/constants/abi/Drop.json'
 import FetaMarketABI from '@/constants/abi/FetaMarket.json'
 import useNetwork from './useNetwork'
+import { useString } from './useString'
 
 export default function useDrop() {
     const dropFactoryAddress = process.env.DROP_FACTORY_CONTRACT as `0x${string}`
@@ -27,16 +28,15 @@ export default function useDrop() {
 
     const dropDB = getDropDB();
     const { get3DImageLink } = useIPFS();
+    const { L } = useString();
 
     const dropDatabase = dropDB.collection('DropCollection')
     const collecterDatabase = dropDB.collection('CollecterCollection');
 
-    const getDropData = async (setIsLoading: Dispatch<SetStateAction<boolean>>) => {
+    const getDropData = async (setIsLoading?: Dispatch<SetStateAction<boolean>>) => {
         try {
-            if (!dropDB) return;
-            const collectionReference = dropDB.collection("DropCollection");
-            if (!collectionReference) return;
-            const data = await collectionReference.get();
+            if (!dropDatabase) return;
+            const data = await dropDatabase.get();
             const dropData = data.data.map(item => item.data)
             const dropDataLatest: any[] = []
             for (let i = 0; i < dropData.length; i++) {
@@ -46,7 +46,20 @@ export default function useDrop() {
             return dropDataLatest
         } catch (err) {
             console.log(err)
+            if (!setIsLoading) return;
             setIsLoading(false)
+        }
+    }
+
+    const getCollecterData = async () => {
+        try {
+            if (!collecterDatabase) return;
+            const data = await collecterDatabase.get();
+            const collecterData = data.data.map(item => item.data);
+
+            return collecterData
+        } catch (err) {
+            console.log(err)
         }
     }
 
@@ -314,6 +327,7 @@ export default function useDrop() {
         getDropData,
         claim,
         getSalesData,
-        getOfferData
+        getOfferData,
+        getCollecterData
     }
 }

@@ -13,15 +13,17 @@ declare global {
 }
 
 interface ModelViewerProps {
-    prevURL: string
+    prevURL: string,
+    bgColor?: string
 }
 
 export default function ModelViewer({
-    prevURL
+    prevURL,
+    bgColor = '#e0f2fe'
 }: ModelViewerProps) {
     return (
         <div className='w-full h-full'>
-            <model-viewer style={{ width: '100%', height: '100%', background: '#e0f2fe', borderRadius: '12px', minHeight: '200px' }} src={prevURL} camera-controls="true" touch-action="pan-y" ar-status="not-presenting" />
+            <model-viewer style={{ width: '100%', height: '100%', background: bgColor, borderRadius: '12px', minHeight: '200px' }} src={prevURL} camera-controls="true" touch-action="pan-y" ar-status="not-presenting" />
         </div>
     )
 }

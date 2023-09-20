@@ -18,19 +18,28 @@ const useCollection = () => {
 
     const [isDeploying, setIsDeploying] = useState(false);
 
-    const getCollectionData = useCallback(async (pathname: string) => {
+    const getCollectionData = useCallback(async (pathname?: string) => {
         if (!collectionDB) return;
         const collectionReference = collectionDB.collection("CollectionData");
         const data = await collectionReference.get();
-        const collection = data.data.find((item) => item.data.id === pathname) as any;
-        return collection?.data
+        if (pathname) {
+            const collection = data.data.find((item) => item.data.id === pathname) as any;
+            return collection?.data
+        } else {
+            return data.data.map(item => item.data)
+        }
     }, [collectionDB])
 
-    const getNFTData = useCallback(async (collection: any) => {
-        if (!collectionDB && !collection) return;
+    const getNFTData = useCallback(async (collection?: any) => {
+        if (!collectionDB) return;
         const nftDataResponse = await (collectionDB.collection('NFTData')).get();
         const nftData = nftDataResponse.data.map(item => item.data)
-        const NFTs = nftData.filter((item) => item.collectionId === collection.id)
+        let NFTs: any[] = []
+        if (collection) {
+            NFTs = nftData.filter((item) => item.collectionId === collection.id)
+        } else {
+            NFTs = nftData
+        }
         let displayNFTData = []
         for (let i = 0; i < NFTs.length; i++) {
             const imageURL = await get3DImageLink(NFTs[i].imageURI)
@@ -45,7 +54,9 @@ const useCollection = () => {
                 lastSynced: NFTs[i].lastSynced,
                 tokenId: NFTs[i].tokenId,
                 network: NFTs[i].network,
-                supply: NFTs[i].supply
+                supply: NFTs[i].supply,
+                wallet: NFTs[i].wallet,
+                isPublic: NFTs[i].isPublic
             })
         }
         return displayNFTData;

@@ -206,8 +206,6 @@ export default function MainSection() {
         getInitialData()
     }, [isDrop, chain?.id])
 
-    console.log(networkNum, toNetwork)
-
     return (
         <Stack direction='row' alignItems='center' justifyContent='center' className="px-3">
             {isLoading ? (

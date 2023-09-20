@@ -163,7 +163,7 @@ export default function MainSection() {
                                             <div className='flex flex-wrap gap-3 items-center text-gray-800 font-semibold'>
                                                 Deployed on
                                                 {item.deployedNetwork.map((itemNetwork: number) => (
-                                                    <img src={NetworkList.find(network => network.id === itemNetwork)?.image} width={25} height={25} draggable={false} />
+                                                    <img src={NetworkList.find(network => network.id === itemNetwork)?.image} width={25} height={25} draggable={false} key={itemNetwork} />
                                                 ))}
                                             </div>
                                             <button className="btn btn-block btn-error btn-sm text-white mt-3">
@@ -237,7 +237,7 @@ export default function MainSection() {
                                             <div className='flex flex-wrap gap-3 items-center text-gray-800 font-semibold'>
                                                 Deployed on
                                                 {item.network.map((itemNetwork: string) => (
-                                                    <img src={NetworkList.find(network => network.network === itemNetwork)?.image} width={25} draggable={false} alt='network' />
+                                                    <img src={NetworkList.find(network => network.network === itemNetwork)?.image} width={25} draggable={false} alt='network' key={itemNetwork} />
                                                 ))}
                                             </div>
                                             <button className="btn btn-block btn-primary btn-sm text-white mt-3">

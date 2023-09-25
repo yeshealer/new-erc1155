@@ -183,6 +183,7 @@ export default function MainSection() {
             const dropData = await getDropData() as any[] | undefined;
             if (!dropData) {
                 enqueueSnackbar('Failed to fetch drop data', { variant: errorVariant })
+                setIsLoading(false)
                 return;
             };
             setDropNames(dropData)
@@ -190,6 +191,7 @@ export default function MainSection() {
             const collectionData = await getCollectionData() as any[] | undefined;
             if (!collectionData) {
                 enqueueSnackbar('Failed to fetch collection data', { variant: errorVariant })
+                setIsLoading(false)
                 return;
             }
             setCollectionNames(collectionData)

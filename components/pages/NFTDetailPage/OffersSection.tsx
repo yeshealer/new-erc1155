@@ -149,14 +149,14 @@ export default function OffersSection({
                                                 {row.amount}
                                             </TableCell>
                                             <TableCell style={{ width: 160 }} align="left">
-                                                <Typography color='#0a72e2' fontSize={15} fontFamily='Bruno' className='cursorPointer' onClick={() => {
-                                                    router.push(`/${row.seller}`)
+                                                <div className='cursorPointer text-sky-500 font-sm' onClick={() => {
+                                                    router.push(`/${row.offerAddress}`)
                                                 }}>
-                                                    {row.seller.slice(0, 10)}...
-                                                </Typography>
+                                                    {row.offerAddress.slice(0, 10)}...
+                                                </div>
                                             </TableCell>
                                             <TableCell style={{ width: 160 }} align="right">
-                                                {row.seller === address ? (
+                                                {row.offerAddress === address ? (
                                                     <div
                                                         className="btn btn-info btn-sm text-white"
                                                         onClick={() => handleCancelOffer(

@@ -392,6 +392,42 @@ const useNFTDetail = () => {
         }
     }
 
+    const handleMakeOffer = async (
+        nftData: any,
+        sellOfferItemCount: number,
+        tokenPrice: number
+    ) => {
+        if (sellOfferItemCount > 0 && nftData) {
+            try {
+                if (tokenPrice) {
+                    await writeContract({
+                        ...fetaMarketContract,
+                        functionName: 'makeOffer',
+                        args: [
+                            nftData.contractAddress,
+                            nftData.tokenId,
+                            sellOfferItemCount,
+                            ethers.parseEther(tokenPrice.toString()),
+                            nftData.ownerAddress,
+                        ],
+                        value: ethers.parseEther((sellOfferItemCount * tokenPrice).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 10 })),
+                    }).then(res => {
+                        const handleNextAction = async () => {
+                            if (!res.hash) return;
+                            const result = await waitForTransaction({ hash: res.hash })
+                            if (result.status === 'success') {
+                                await fetchOfferList(nftData)
+                            }
+                        }
+                        handleNextAction();
+                    })
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    }
+
     return {
         fetchMainData,
         fetchTokenPrice,
@@ -401,7 +437,8 @@ const useNFTDetail = () => {
         handleBuyListToken,
         handleCancelOffer,
         handleAcceptOffer,
-        handleCreateList
+        handleCreateList,
+        handleMakeOffer
     }
 }
 

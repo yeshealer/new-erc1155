@@ -23,7 +23,7 @@ export default function MakeOfferModal({
     const { chain } = useNetwork();
     const { address } = useAccount();
 
-    const { handleCreateList } = useNFTDetail();
+    const { handleMakeOffer } = useNFTDetail();
 
     const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value
@@ -70,15 +70,22 @@ export default function MakeOfferModal({
                         </Stack>
                         <Stack justifyContent='space-between' alignItems='center' direction='row' mt={1}>
                             <div className='text-sm'>Token Price</div>
-                            <input type="text" placeholder="Type here" className="input input-sm input-bordered w-full max-w-xs" value={tokenPrice} onChange={(event) => setTokenPrice(Number(event.target.value))} disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase()} />
+                            <input
+                                type="text"
+                                placeholder="Type here"
+                                className="input input-sm input-bordered w-full max-w-xs"
+                                value={tokenPrice}
+                                onChange={(event) => setTokenPrice(Number(event.target.value))}
+                                disabled={nftData.ownerAddress.toLocaleLowerCase() === address.toLocaleLowerCase()}
+                            />
                         </Stack>
                         <Stack justifyContent='flex-end' mt={2}>
                             <button
                                 className='btn btn-info btn-sm text-white'
-                                disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase() || nftData.supply < sellOfferItemCount || sellOfferItemCount <= 0}
-                                onClick={() => handleCreateList(nftData, sellOfferItemCount, tokenPrice)}
+                                disabled={nftData.ownerAddress.toLocaleLowerCase() === address.toLocaleLowerCase()}
+                                onClick={() => handleMakeOffer(nftData, sellOfferItemCount, tokenPrice)}
                             >
-                                List {sellOfferItemCount} {sellOfferItemCount > 1 ? 'items' : 'item'}
+                                Make Offer
                             </button>
                         </Stack>
                     </Stack>

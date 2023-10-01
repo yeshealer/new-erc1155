@@ -18,6 +18,14 @@ const useIPFS = () => {
         return resolveLink(imageLink)
     }
 
+    const getProperties = async (url: string) => {
+        let metadata: any = []
+        await fetch(resolveLink(url)).then(res => res.json()).then(
+            (res) => metadata = res.attributes
+        ).catch(err => console.log(err))
+        return metadata
+    }
+
     const sendFileToIPFS = async (fileImg: string) => {
         try {
             const formData = new FormData();
@@ -68,6 +76,7 @@ const useIPFS = () => {
     return {
         resolveLink,
         get3DImageLink,
+        getProperties,
         sendFileToIPFS,
         sendJSONtoIPFS
     }

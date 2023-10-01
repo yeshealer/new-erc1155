@@ -14,7 +14,10 @@ const useCollection = () => {
 
     const collectionDB = getCollectionDB();
     const { enqueueSnackbar } = useSnackbar();
-    const { get3DImageLink } = useIPFS();
+    const {
+        get3DImageLink,
+        getProperties
+    } = useIPFS();
 
     const [isDeploying, setIsDeploying] = useState(false);
 
@@ -43,6 +46,7 @@ const useCollection = () => {
         let displayNFTData = []
         for (let i = 0; i < NFTs.length; i++) {
             const imageURL = await get3DImageLink(NFTs[i].imageURI)
+            const properties = await getProperties(NFTs[i].imageURI)
             displayNFTData.push({
                 imageURL: imageURL,
                 networkImage: NetworkList.find(network => network.id === NFTs[i].network)?.image,
@@ -55,8 +59,8 @@ const useCollection = () => {
                 tokenId: NFTs[i].tokenId,
                 network: NFTs[i].network,
                 supply: NFTs[i].supply,
-                wallet: NFTs[i].wallet,
-                isPublic: NFTs[i].isPublic
+                collectionID: NFTs[i].collectionId,
+                properties: properties
             })
         }
         return displayNFTData;

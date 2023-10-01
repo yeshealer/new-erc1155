@@ -27,3 +27,11 @@ export enum DurationUnit {
     day,
     Month
 }
+
+
+export interface DetailsType {
+    contractAddress: string;
+    network: string;
+    tokenID: string;
+    ownerAddress: string;
+}

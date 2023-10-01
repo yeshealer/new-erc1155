@@ -9,9 +9,8 @@ interface TabsProps {
     setSellListItemCount: Dispatch<SetStateAction<number>>
     sellOfferItemCount: number;
     setSellOfferItemCount: Dispatch<SetStateAction<number>>
-    setIsCreateListModal: Dispatch<SetStateAction<boolean>>
-    setIsMakeOfferModal: Dispatch<SetStateAction<boolean>>
     openCreateListModal: () => void
+    openMakeOfferModal: () => void
 }
 
 export default function Tabs({
@@ -20,9 +19,8 @@ export default function Tabs({
     setSellListItemCount,
     sellOfferItemCount,
     setSellOfferItemCount,
-    setIsCreateListModal,
-    setIsMakeOfferModal,
-    openCreateListModal
+    openCreateListModal,
+    openMakeOfferModal
 }: TabsProps) {
     const { address } = useAccount();
 
@@ -80,7 +78,7 @@ export default function Tabs({
                 <Stack direction='row' gap={3} p={2}>
                     <button
                         className="btn btn-sm btn-info text-white"
-                        onClick={() => setIsMakeOfferModal(true)}
+                        onClick={() => openMakeOfferModal()}
                         disabled={nftData.ownerAddress.toLocaleLowerCase() === address.toLocaleLowerCase()}
                     >
                         Make offer

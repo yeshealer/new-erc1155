@@ -14,6 +14,7 @@ import Tabs from "./Tabs";
 import ListingsSection from "./ListingsSection";
 import OffersSection from "./OffersSection";
 import CreateListModal from "./CreateListModal";
+import MakeOfferModal from "./MakeOfferModal";
 
 export default function MainSection() {
     const params = useParams();
@@ -37,8 +38,6 @@ export default function MainSection() {
     const [totalOffer, setTotalOffer] = useState<any>();
     const [sellListItemCount, setSellListItemCount] = useState(1);
     const [sellOfferItemCount, setSellOfferItemCount] = useState(1);
-    const [isCreateListModal, setIsCreateListModal] = useState(false);
-    const [isMakeOfferModal, setIsMakeOfferModal] = useState(false);
 
     const getMainData = async () => {
         try {
@@ -67,9 +66,9 @@ export default function MainSection() {
         }
     }
 
-    const closeCreateListModal = () => {
+    const openMakeOfferModal = () => {
         if (typeof document !== 'undefined') {
-            (document.getElementById('create_list_modal') as HTMLDialogElement)?.close();
+            (document.getElementById('make_offer_modal') as HTMLDialogElement)?.showModal();
         }
     }
 
@@ -139,9 +138,8 @@ export default function MainSection() {
                                     setSellListItemCount={setSellListItemCount}
                                     sellOfferItemCount={sellOfferItemCount}
                                     setSellOfferItemCount={setSellOfferItemCount}
-                                    setIsCreateListModal={setIsCreateListModal}
-                                    setIsMakeOfferModal={setIsMakeOfferModal}
                                     openCreateListModal={openCreateListModal}
+                                    openMakeOfferModal={openMakeOfferModal}
                                 />
                                 <Divider />
                                 <ListingsSection
@@ -157,13 +155,22 @@ export default function MainSection() {
                                     getMainData={getMainData}
                                 />
                                 {nftData && (
-                                    <CreateListModal
-                                        nftData={nftData}
-                                        tokenPrice={tokenPrice}
-                                        sellListItemCount={sellListItemCount}
-                                        setSellListItemCount={setSellListItemCount}
-                                        setTokenPrice={setTokenPrice}
-                                    />
+                                    <>
+                                        <CreateListModal
+                                            nftData={nftData}
+                                            tokenPrice={tokenPrice}
+                                            sellListItemCount={sellListItemCount}
+                                            setSellListItemCount={setSellListItemCount}
+                                            setTokenPrice={setTokenPrice}
+                                        />
+                                        <MakeOfferModal
+                                            nftData={nftData}
+                                            tokenPrice={tokenPrice}
+                                            sellOfferItemCount={sellOfferItemCount}
+                                            setSellOfferItemCount={setSellOfferItemCount}
+                                            setTokenPrice={setTokenPrice}
+                                        />
+                                    </>
                                 )}
                             </Stack>
                         </Stack>

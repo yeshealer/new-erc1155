@@ -162,8 +162,6 @@ export default function MainSection() {
                                         tokenPrice={tokenPrice}
                                         sellListItemCount={sellListItemCount}
                                         setSellListItemCount={setSellListItemCount}
-                                        sellOfferItemCount={sellOfferItemCount}
-                                        setSellOfferItemCount={setSellOfferItemCount}
                                         setTokenPrice={setTokenPrice}
                                     />
                                 )}

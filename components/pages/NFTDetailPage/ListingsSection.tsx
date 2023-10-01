@@ -150,11 +150,11 @@ export default function ListingsSection({
                                                 {row.amount}
                                             </TableCell>
                                             <TableCell style={{ width: 160 }} align="left">
-                                                <Typography color='#0a72e2' fontSize={15} fontFamily='Bruno' className='cursorPointer' onClick={() => {
+                                                <div className='cursorPointer text-sky-500 font-sm' onClick={() => {
                                                     router.push(`/${row.seller}`)
                                                 }}>
                                                     {row.seller.slice(0, 10)}...
-                                                </Typography>
+                                                </div>
                                             </TableCell>
                                             <TableCell style={{ width: 160 }} align="right">
                                                 {row.seller === address ? (

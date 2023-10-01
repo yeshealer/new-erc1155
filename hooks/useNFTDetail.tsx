@@ -65,14 +65,14 @@ const useNFTDetail = () => {
         })
         if (!nftData) return;
         const saleInfo = totalSaleInfo.map((item: any, index: number) => {
-            if (item.token === nftData.contractAddress) {
+            if (item.result[1] === nftData.contractAddress) {
                 return {
-                    price: Number(item.price) / 1e18 + ' ' + NetworkList.find(item => chain?.id === item.id)?.currency,
-                    amount: Number(item.amount),
-                    tokenId: Number(item.tokenId),
-                    seller: item.seller,
+                    price: Number(item.result[4]) / 1e18 + ' ' + NetworkList.find(item => chain?.id === item.id)?.currency,
+                    amount: Number(item.result[3]),
+                    tokenId: Number(item.result[2]),
+                    seller: item.result[0],
                     sellId: index,
-                    isTotalSold: item.isTotalSold
+                    isTotalSold: item.result[5]
                 }
             }
         }).filter(item => item)
@@ -97,14 +97,14 @@ const useNFTDetail = () => {
         })
         if (!nftData) return;
         const listInfo = totalListInfo.map((item: any, index: number) => {
-            if (item.token === nftData.contractAddress) {
+            if (item.result[1] === nftData.contractAddress) {
                 return {
-                    price: Number(item.offerPrice) / 1e18 + ' ' + NetworkList.find(item => chain?.id === item.id)?.currency,
-                    amount: Number(item.offerAmount),
-                    tokenId: Number(item.tokenId),
-                    offerAddress: item.offerAddress,
+                    price: Number(item.result[4]) / 1e18 + ' ' + NetworkList.find(item => chain?.id === item.id)?.currency,
+                    amount: Number(item.result[3]),
+                    tokenId: Number(item.result[2]),
+                    offerAddress: item.result[0],
                     offerId: index,
-                    isAccepted: item.isAccepted
+                    isAccepted: item.result[6]
                 }
             }
         }).filter(item => item)
@@ -325,6 +325,73 @@ const useNFTDetail = () => {
         }
     }
 
+    const handleCreateList = async (
+        nftData: any,
+        sellListItemCount: number,
+        tokenPrice: number
+    ) => {
+        if (sellListItemCount > 0 && nftData) {
+            try {
+                if (tokenPrice) {
+                    const isApproved = await readContract({
+                        address: nftData.contractAddress,
+                        abi: NFTABI,
+                        functionName: 'isApprovedForAll',
+                        args: [
+                            address,
+                            fetaMarketAddress
+                        ]
+                    })
+                    const createListFunc = async () => {
+                        await writeContract({
+                            ...fetaMarketContract,
+                            functionName: 'createList',
+                            args: [
+                                nftData.contractAddress,
+                                nftData.tokenId,
+                                sellListItemCount,
+                                ethers.parseEther(tokenPrice.toString())
+                            ]
+                        }).then(res => {
+                            const handleNextAction = async () => {
+                                if (!res.hash) return;
+                                const result = await waitForTransaction({ hash: res.hash })
+                                if (result.status === 'success') {
+                                    await fetchSaleList(nftData)
+                                }
+                            }
+                            handleNextAction()
+                        })
+                    }
+                    if (!isApproved) {
+                        await writeContract({
+                            address: nftData.contractAddress,
+                            abi: NFTABI,
+                            functionName: 'setApprovalForAll',
+                            args: [
+                                fetaMarketAddress,
+                                true
+                            ]
+                        }).then(res => {
+                            const handleNextAction = async () => {
+                                if (!res.hash) return;
+                                const result = await waitForTransaction({ hash: res.hash })
+                                if (result.status === 'success') {
+                                    await createListFunc()
+                                }
+                            }
+                            handleNextAction()
+                        })
+                    } else {
+                        await createListFunc();
+                    }
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    }
+
     return {
         fetchMainData,
         fetchTokenPrice,
@@ -333,7 +400,8 @@ const useNFTDetail = () => {
         handleCancelList,
         handleBuyListToken,
         handleCancelOffer,
-        handleAcceptOffer
+        handleAcceptOffer,
+        handleCreateList
     }
 }
 

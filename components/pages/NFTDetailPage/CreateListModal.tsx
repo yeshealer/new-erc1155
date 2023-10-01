@@ -3,6 +3,7 @@ import { Stack } from '@mui/material'
 import { NetworkList } from '@/constants/main'
 import { useAccount, useNetwork } from 'wagmi'
 import { Icon } from '@iconify/react'
+import useNFTDetail from '@/hooks/useNFTDetail'
 
 interface CreateListModalProps {
     nftData: any
@@ -10,8 +11,6 @@ interface CreateListModalProps {
     setTokenPrice: Dispatch<SetStateAction<number>>
     sellListItemCount: number;
     setSellListItemCount: Dispatch<SetStateAction<number>>
-    sellOfferItemCount: number;
-    setSellOfferItemCount: Dispatch<SetStateAction<number>>
 }
 
 export default function CreateListModal({
@@ -19,13 +18,13 @@ export default function CreateListModal({
     tokenPrice,
     sellListItemCount,
     setSellListItemCount,
-    sellOfferItemCount,
-    setSellOfferItemCount,
     setTokenPrice
 }: CreateListModalProps) {
 
     const { chain } = useNetwork();
     const { address } = useAccount();
+
+    const { handleCreateList } = useNFTDetail();
 
     const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value
@@ -73,6 +72,15 @@ export default function CreateListModal({
                         <Stack justifyContent='space-between' alignItems='center' direction='row' mt={1}>
                             <div className='text-sm'>Token Price</div>
                             <input type="text" placeholder="Type here" className="input input-sm input-bordered w-full max-w-xs" value={tokenPrice} onChange={(event) => setTokenPrice(Number(event.target.value))} disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase()} />
+                        </Stack>
+                        <Stack justifyContent='flex-end' mt={2}>
+                            <button
+                                className='btn btn-info btn-sm text-white'
+                                disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase() || nftData.supply < sellListItemCount || sellListItemCount <= 0}
+                                onClick={() => handleCreateList(nftData, sellListItemCount, tokenPrice)}
+                            >
+                                List {sellListItemCount} {sellListItemCount > 1 ? 'items' : 'item'}
+                            </button>
                         </Stack>
                     </Stack>
                 )}

@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { getCollectionDB } from '@/utils/polybaseHelper';
 import { useRouter } from 'next/navigation';
 import { closeSnackbar, enqueueSnackbar } from 'notistack';
-import { infoVariant } from '@/utils/stickyHelper';
+import { infoVariant, warningVariant } from '@/utils/stickyHelper';
 
 const useNFTDetail = () => {
     const fetaMarketAddress = process.env.FETA_MARKET_CONTRACT
@@ -115,6 +115,7 @@ const useNFTDetail = () => {
 
     const handleCancelList = async (sellId: string, nftData: any) => {
         try {
+            const cancelKey = enqueueSnackbar('Cancelling list...', { variant: infoVariant })
             await writeContract({
                 ...fetaMarketContract,
                 functionName: 'cancelList',
@@ -131,6 +132,7 @@ const useNFTDetail = () => {
                 }
                 handleNextAction()
             })
+            closeSnackbar(cancelKey)
         } catch (err) {
             console.log(err);
         }
@@ -338,10 +340,15 @@ const useNFTDetail = () => {
     const handleCreateList = async (
         nftData: any,
         sellListItemCount: number,
-        tokenPrice: number
+        tokenPrice: number,
+        isDrop?: boolean,
+        collection?: any
     ) => {
         if (sellListItemCount > 0 && nftData) {
             try {
+                if (tokenPrice === 0) {
+                    enqueueSnackbar('Price can not be zero!', { variant: warningVariant })
+                }
                 if (tokenPrice) {
                     const readingKey = enqueueSnackbar('Reading data', { variant: infoVariant })
                     const isApproved = await readContract({
@@ -361,7 +368,7 @@ const useNFTDetail = () => {
                             functionName: 'createList',
                             args: [
                                 nftData.contractAddress,
-                                nftData.tokenId,
+                                isDrop ? collection.claimId[0] : nftData.tokenId,
                                 sellListItemCount,
                                 ethers.parseEther(tokenPrice.toString())
                             ]

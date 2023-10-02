@@ -27,8 +27,10 @@ export default function useDrop() {
     const { getNetworkIndex } = useNetwork();
 
     const dropDB = getDropDB();
-    const { get3DImageLink } = useIPFS();
-    const { L } = useString();
+    const {
+        get3DImageLink,
+        getProperties
+    } = useIPFS();
 
     const dropDatabase = dropDB.collection('DropCollection')
     const collecterDatabase = dropDB.collection('CollecterCollection');
@@ -41,7 +43,8 @@ export default function useDrop() {
             const dropDataLatest: any[] = []
             for (let i = 0; i < dropData.length; i++) {
                 const imgLink = await get3DImageLink(dropData[i].baseURI)
-                dropDataLatest.push({ ...dropData[i], imageURL: imgLink })
+                const properties = await getProperties(dropData[i].baseURI)
+                dropDataLatest.push({ ...dropData[i], imageURL: imgLink, properties: properties })
             }
             return dropDataLatest
         } catch (err) {

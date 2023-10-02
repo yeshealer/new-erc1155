@@ -4,7 +4,7 @@ import { Stack } from '@mui/material'
 import { useAccount } from 'wagmi';
 import { Icon } from '@iconify/react';
 import useCollection from '@/hooks/useCollection';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import useDrop from '@/hooks/useDrop';
 import { useString } from '@/hooks/useString';
 import { NetworkList } from '@/constants/main';
@@ -23,6 +23,7 @@ export default function MainSection() {
     const [activeTab, setActiveTab] = useState<number>(0);
 
     const { address } = useAccount();
+    const router = useRouter();
     const pathname = usePathname();
     const {
         getCollectionData,
@@ -276,7 +277,7 @@ export default function MainSection() {
                                                 Claimed on
                                                 <img src={NetworkList.find(network => network.id === item.network)?.image} width={25} draggable={false} alt='network' />
                                             </div>
-                                            <button className="btn btn-block btn-info btn-sm text-white mt-3">
+                                            <button className="btn btn-block btn-info btn-sm text-white mt-3" onClick={() => router.push(`/detail/drop/${item.contractAddress}/${item.network}/${item.claimId[0]}/${item.collecter}`)}>
                                                 Show details
                                                 <Icon icon="ic:twotone-info" fontSize={20} />
                                             </button>

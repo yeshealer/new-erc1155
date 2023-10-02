@@ -8,6 +8,9 @@ import { switchNetwork } from '@wagmi/core'
 import { useSnackbar } from 'notistack';
 import { errorVariant } from '@/utils/stickyHelper';
 import useDrop from '@/hooks/useDrop';
+import { ZERO_ADDRESS } from '@/utils/addressHelper';
+import { useAccount, useNetwork } from 'wagmi';
+import ModelViewer from '@/components/widgets/ModelViewer';
 
 const filterData = ['All', 'Listings', 'Offers'].map(
     item => ({ label: item, value: item })
@@ -15,16 +18,23 @@ const filterData = ['All', 'Listings', 'Offers'].map(
 
 export default function MainSection() {
     const router = useRouter();
+    const { address } = useAccount();
+    const { chain } = useNetwork();
     const { enqueueSnackbar } = useSnackbar();
-    const { getSalesData, getOfferData } = useDrop();
+    const {
+        getSalesData,
+        getOfferData,
+        getDropData
+    } = useDrop();
 
     const [isLoading, setIsLoading] = useState(false);
     const [typeFilter, setTypeFilter] = useState(filterData[0].value);
     const [searchFilter, setSearchFilter] = useState({
         network: 0
     });
-    const [saleData, setSaleData] = useState([]);
-    const [offerData, setOfferData] = useState([]);
+    const [saleData, setSaleData] = useState<any[]>([]);
+    const [offerData, setOfferData] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState(0);
 
     const handleChangeType = (value: string) => {
         setTypeFilter(value)
@@ -45,9 +55,53 @@ export default function MainSection() {
     }
 
     const getInitialData = async () => {
-        const saleData = await getSalesData();
-        const offerData = await getOfferData();
+        const [saleData, offerData, dropData] = await Promise.all([getSalesData(), getOfferData(), getDropData()]);
+
+        const availableSaleInfo = saleData
+            .filter((item: any) => item.token !== ZERO_ADDRESS)
+            .map((saleItem: any) => {
+                const baseInfo = dropData?.find(dropItem => dropItem.contractAddress === saleItem.token);
+                if (!baseInfo) return null;
+
+                return {
+                    amount: Number(saleItem.amount),
+                    price: Number(saleItem.price) / 1e18,
+                    seller: saleItem.seller,
+                    imageURL: baseInfo.imageURL,
+                    title: baseInfo.title,
+                    symbol: baseInfo.symbol,
+                    initialPrice: baseInfo.pricePerToken,
+                    token: saleItem.token,
+                    tokenID: Number(saleItem.tokenId)
+                };
+            })
+            .filter((item: any) => item !== null);
+
+        const availableOfferInfo = offerData
+            .filter((item: any) => item.token !== ZERO_ADDRESS)
+            .map((offerItem: any) => {
+                const baseInfo = dropData?.find(dropItem => dropItem.contractAddress === offerItem.token);
+                if (!baseInfo) return null;
+
+                return {
+                    amount: Number(offerItem.amount),
+                    price: Number(offerItem.price) / 1e18,
+                    seller: offerItem.seller,
+                    imageURL: baseInfo.imageURL,
+                    title: baseInfo.title,
+                    symbol: baseInfo.symbol,
+                    initialPrice: baseInfo.pricePerToken,
+                    token: offerItem.token,
+                    tokenID: Number(offerItem.tokenId),
+                    owner: offerItem.ownerAddress
+                };
+            })
+            .filter((item: any) => item !== null);
+
+        setSaleData(availableSaleInfo);
+        setOfferData(availableOfferInfo);
     }
+
 
     useEffect(() => {
         getInitialData();
@@ -95,6 +149,89 @@ export default function MainSection() {
                         </div>
                     </Stack>
                     <div className='divider' />
+                    <Stack>
+                        <div className="tabs">
+                            <a className={`tab tab-lifted ${activeTab === 0 && 'tab-active'}`} onClick={() => setActiveTab(0)}>Sale List</a>
+                            <a className={`tab tab-lifted ${activeTab === 1 && 'tab-active'}`} onClick={() => setActiveTab(1)}>Offer List</a>
+                        </div>
+                        {activeTab === 0 && (
+                            <Stack direction='row' flexWrap='wrap' justifyContent='space-between' gap='10px' mt='10px'>
+                                {(saleData && saleData.length > 0) ? saleData.map((item: any, index: number) => (
+                                    <Stack key={index}>
+                                        <div className='badge badge-sm badge-info text-white absolute top-10 left-10 z-10'>{item.title} ({item.symbol})</div>
+                                        {item.seller === address && <div className='badge badge-sm badge-error text-white absolute top-10 right-10 z-10'>Owned</div>}
+                                        <ModelViewer prevURL={item.imageURL} />
+                                        <Stack p={1}>
+                                            <Stack direction='row' alignItems='flex-end' flexWrap='wrap'>
+                                                <div>
+                                                    <span className='text-sky-500 cursor-pointer' onClick={() => router.push(`/${item.seller}`)}>
+                                                        {item.seller === address ? 'You' : item.seller.slice(0, 6).toLocaleUpperCase() + '...'}
+                                                    </span> listed
+                                                    <span className='text-sky-500'>
+                                                        {item.amount}
+                                                    </span> Drop(s) for sale
+                                                </div>
+                                                <div>
+                                                    {item.seller === address ? 'Your' : 'This'} Drop claimed at
+                                                    <span className='text-sky-500'>
+                                                        {item.initialPrice === 0 ? 'Free' : item.initialPrice}
+                                                    </span> and listed at
+                                                    <span className='text-sky-500'>
+                                                        {item.price === 0 ? 'Free' : item.price} {NetworkList.find(item => item.id === chain?.id)?.currency}
+                                                    </span>
+                                                </div>
+                                            </Stack>
+                                        </Stack>
+                                    </Stack>
+                                )) : (
+                                    <div className="alert alert-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                        <span>Currently, there are no drops available for purchase!</span>
+                                    </div>
+                                )}
+                            </Stack>
+                        )}
+                        {activeTab === 1 && (
+                            <Stack direction='row' flexWrap='wrap' justifyContent='space-between' gap='10px' mt='10px'>
+                                {(offerData && offerData.length > 0) ? offerData.map((item: any, index: number) => (
+                                    <Stack key={index} position={'relative'}>
+                                        <div className='badge badge-sm badge-info text-white absolute top-10 left-10 z-10'>{item.title} ({item.symbol})</div>
+                                        <Stack alignItems='center' gap={1} direction={'row'} position={'absolute'} top={'10px'} right={'10px'} zIndex={10}>
+                                            {item.seller === address && <div className='badge badge-sm badge-error text-white'>Owned Offer</div>}
+                                            {item.owner === address && <div className='bdage badge-sm badge-primary text-white'>Owned Drop</div>}
+                                        </Stack>
+                                        <ModelViewer prevURL={item.imageURL} />
+                                        <Stack p={1}>
+                                            <Stack direction='row' alignItems='flex-end' flexWrap='wrap'>
+                                                <div>
+                                                    <span className='text-sky-500 cursor-pointer' onClick={() => router.push(`/${item.seller}`)}>
+                                                        {item.seller === address ? 'You' : item.seller.slice(0, 6).toLocaleUpperCase() + '...'}
+                                                    </span> made an offer
+                                                    <span className='text-sky-500'>
+                                                        {item.amount}
+                                                    </span> Drop(s) to buy
+                                                </div>
+                                                <div>
+                                                    {item.owner === address ? 'Your' : 'This'} Drop claimed at
+                                                    <span className='text-sky-500'>
+                                                        {item.initialPrice === 0 ? 'Free' : item.initialPrice}
+                                                    </span> and offered at
+                                                    <span className='text-sky-500'>
+                                                        {item.price === 0 ? 'Free' : item.price} {NetworkList.find(item => item.id === chain?.id)?.currency}
+                                                    </span>
+                                                </div>
+                                            </Stack>
+                                        </Stack>
+                                    </Stack>
+                                )) : (
+                                    <div className="alert alert-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                        <span>Currently, there are no drops available for purchase!</span>
+                                    </div>
+                                )}
+                            </Stack>
+                        )}
+                    </Stack>
                 </Stack>
             )}
         </Stack>

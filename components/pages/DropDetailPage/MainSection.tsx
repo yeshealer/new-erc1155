@@ -15,6 +15,7 @@ import ListingsSection from "./ListingsSection";
 import OffersSection from "./OffersSection";
 import CreateListModal from "./CreateListModal";
 import MakeOfferModal from "./MakeOfferModal";
+import useDropDetail from "@/hooks/useDropDetail";
 
 export default function MainSection() {
     const params = useParams();
@@ -22,16 +23,19 @@ export default function MainSection() {
     const { chain } = useNetwork();
 
     const {
-        fetchMainData,
-        fetchTokenPrice,
         fetchSaleList,
         fetchOfferList
     } = useNFTDetail();
 
+    const {
+        fetchMainData,
+        fetchTokenPrice
+    } = useDropDetail();
+
     const [isLoading, setIsLoading] = useState(false);
     const [details, setDetails] = useState<DetailsType>();
-    const [nftData, setNFTData] = useState<any>();
-    const [collection, setCollection] = useState<any>();
+    const [dropData, setDropData] = useState<any>();
+    const [collecterData, setCollecterData] = useState<any>();
     const [availableUsers, setAvailableUsers] = useState<any>();
     const [tokenPrice, setTokenPrice] = useState<number>(0);
     const [totalList, setTotalList] = useState<any>();
@@ -45,12 +49,13 @@ export default function MainSection() {
             if (!details) return;
             const mainData = await fetchMainData(details);
             if (!mainData) return;
-            setNFTData(mainData.matchNFTData)
-            setCollection(mainData.matchCollection)
-            setAvailableUsers(mainData.availableUsers)
-            const tokenPrice = await fetchTokenPrice(mainData.matchNFTData)
-            const latestSaleList = await fetchSaleList(mainData.matchNFTData)
-            const latestOfferList = await fetchOfferList(mainData.matchNFTData)
+            console.log(mainData)
+            setDropData(mainData.matchDrop)
+            setCollecterData(mainData.matchCollecterData)
+            setAvailableUsers(mainData.activeUser)
+            const tokenPrice = await fetchTokenPrice(mainData.matchDrop)
+            const latestSaleList = await fetchSaleList(mainData.matchDrop)
+            const latestOfferList = await fetchOfferList(mainData.matchDrop)
             setTokenPrice(tokenPrice)
             setTotalList(latestSaleList)
             setTotalOffer(latestOfferList)
@@ -85,21 +90,21 @@ export default function MainSection() {
     }
 
     useEffect(() => {
-        if (!params || !params.nft) return;
+        if (!params || !params.drop) return;
         setDetails({
-            contractAddress: params.nft[0] as string,
-            network: params.nft[1] as string,
-            tokenID: params.nft[2] as string,
-            ownerAddress: params.nft[3] as string
+            contractAddress: params.drop[0] as string,
+            network: params.drop[1] as string,
+            tokenID: params.drop[2] as string,
+            ownerAddress: params.drop[3] as string
         })
-        if (Number(params.nft[1]) !== chain?.id) {
+        if (Number(params.drop[1]) !== chain?.id) {
             (async () => {
                 await switchNetwork({
-                    chainId: Number(params.nft[1])
+                    chainId: Number(params.drop[1])
                 });
             })();
         }
-    }, [JSON.stringify(params?.nft)])
+    }, [JSON.stringify(params?.drop)])
 
     useEffect(() => {
         if (!isConnected) return;
@@ -118,19 +123,19 @@ export default function MainSection() {
                 </Stack>
             ) : (
                 <Stack className="max-w-7xl w-full relative">
-                    {(nftData && collection) && (
+                    {(dropData && collecterData) && (
                         <Stack className='w-full' direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
                             <Stack width={{ xs: 'full', md: '40%' }}>
-                                <Title nftData={nftData} collection={collection} />
+                                <Title nftData={dropData} collection={collecterData} />
                                 <Stack className="w-full aspect-square">
-                                    <ModelViewer prevURL={nftData.imageURL} />
+                                    <ModelViewer prevURL={dropData.imageURL} />
                                 </Stack>
                                 <Stack className="mt-2">
-                                    <NFTDescription nftData={nftData} collection={collection} />
+                                    <NFTDescription nftData={dropData} collection={collecterData} />
                                 </Stack>
                             </Stack>
                             <Stack width={{ xs: 'full', md: '55%' }}>
-                                <Title nftData={nftData} collection={collection} isShow />
+                                <Title nftData={dropData} collection={collecterData} isShow />
                                 <Stack direction='row' alignItems='center' mb={2} gap={2}>
                                     {availableUsers && (
                                         <Stack direction='row' alignItems='center' gap={0.5}>
@@ -140,12 +145,13 @@ export default function MainSection() {
                                     )}
                                     <Stack direction='row' alignItems='center' gap={0.5}>
                                         <Icon icon="ant-design:table-outlined" fontSize={18} />
-                                        {availableUsers.map((item: any) => item.supply).reduce((acc: number, cur: number) => { return acc + cur }, 0)} items
+                                        {dropData.buyedAmount.reduce((acc: number, cur: number) => { return acc + cur }, 0)} items
                                     </Stack>
                                 </Stack>
                                 <Divider />
                                 <Tabs
-                                    nftData={nftData}
+                                    nftData={dropData}
+                                    collection={collecterData}
                                     sellListItemCount={sellListItemCount}
                                     setSellListItemCount={setSellListItemCount}
                                     sellOfferItemCount={sellOfferItemCount}
@@ -156,33 +162,37 @@ export default function MainSection() {
                                 <Divider />
                                 <ListingsSection
                                     totalListings={totalList}
-                                    nftData={nftData}
+                                    nftData={dropData}
                                     availableUsers={availableUsers}
                                     getMainData={getMainData}
                                 />
                                 <OffersSection
                                     totalOffers={totalOffer}
-                                    nftData={nftData}
+                                    nftData={dropData}
                                     availableUsers={availableUsers}
                                     getMainData={getMainData}
                                 />
-                                {nftData && (
+                                {dropData && (
                                     <>
                                         <CreateListModal
-                                            nftData={nftData}
+                                            nftData={dropData}
+                                            collection={collecterData}
                                             tokenPrice={tokenPrice}
                                             sellListItemCount={sellListItemCount}
                                             setSellListItemCount={setSellListItemCount}
                                             setTokenPrice={setTokenPrice}
                                             closeCreateListModal={closeCreateListModal}
+                                            getMainData={getMainData}
                                         />
                                         <MakeOfferModal
-                                            nftData={nftData}
+                                            nftData={dropData}
+                                            collection={collecterData}
                                             tokenPrice={tokenPrice}
                                             sellOfferItemCount={sellOfferItemCount}
                                             setSellOfferItemCount={setSellOfferItemCount}
                                             setTokenPrice={setTokenPrice}
                                             closeMakeOfferModal={closeMakeOfferModal}
+                                            getMainData={getMainData}
                                         />
                                     </>
                                 )}

@@ -10,6 +10,7 @@ import { NetworkList } from '@/constants/main';
 import useNetwork from '@/hooks/useNetwork';
 import { useAccount, useNetwork as useNetworkInfo } from 'wagmi';
 import { DropDetailTypes } from '@/constants/type';
+import { ZERO_ADDRESS } from '@/utils/addressHelper';
 
 const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
@@ -173,13 +174,14 @@ export default function MainSection() {
     }, [chain?.id, isDeploying])
 
     useEffect(() => {
-        setSelectedDrop(searchParams.get('address') || '')
+        setSelectedDrop(searchParams.get('address') || ZERO_ADDRESS)
     }, [searchParams])
 
     useEffect(() => {
         if (selectedDrop && !isLoading) {
             const selectedElement = document.getElementById(selectedDrop)
-            animateScroll.scrollTo(selectedElement?.scrollHeight || 0 - 770)
+            console.log(selectedElement?.offsetTop)
+            animateScroll.scrollTo(selectedElement?.offsetTop || 0)
         }
     }, [selectedDrop, isLoading])
 
@@ -267,7 +269,7 @@ export default function MainSection() {
                             const isEnded = dayCounter[index] <= 0 && hoursCounter[index] <= 0 && minutesCounter[index] < 0
                             return (
                                 <Element name={item.contractAddress} id={item.contractAddress} key={item.id}>
-                                    <div className="card card-compact bg-base-100 shadow-xl shadow-sky-500/20 border border-sky-500/50">
+                                    <div className={`card card-compact bg-base-100 shadow-xl shadow-sky-500/20 border border-sky-500/50 ${item.contractAddress === selectedDrop ? 'ring ring-sky-500 ring-offset-2' : ''}`}>
                                         <figure className='relative'>
                                             <ModelViewer prevURL={item.imageURL} />
                                         </figure>

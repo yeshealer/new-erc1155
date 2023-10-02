@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { NetworkList, exploreTabConfig } from "@/constants/main";
 import { fetchBalance } from '@wagmi/core'
 import { useNetwork } from "wagmi";
+import { useRouter } from "next/navigation";
 
 const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
@@ -16,6 +17,7 @@ export default function MainSection() {
 
     const { getDropData } = useDrop();
     const { chain } = useNetwork();
+    const router = useRouter();
 
     const getTotalSum = (numArray: number[]) => {
         return numArray.reduce((beforeValue, currentValue) => beforeValue + currentValue, 0)
@@ -87,7 +89,7 @@ export default function MainSection() {
                                         <div className="badge badge-sm absolute right-2 bottom-2">{getTotalSum(dropDataOne.buyedAmount)} claimed</div>
                                     </figure>
                                     <div className="card-body">
-                                        <button className="btn btn-block btn-info btn-sm text-white">
+                                        <button className="btn btn-block btn-info btn-sm text-white" onClick={() => router.push(`/drop?address=${dropDataOne.contractAddress}`)}>
                                             Show details
                                             <Icon icon="ic:twotone-info" fontSize={20} />
                                         </button>
@@ -108,7 +110,7 @@ export default function MainSection() {
                                         <div className="badge badge-sm absolute right-2 bottom-2">Synced on {getLocalTime(dropDataOne.startTimestamp as any)}</div>
                                     </figure>
                                     <div className="card-body">
-                                        <button className="btn btn-block btn-info btn-sm text-white">
+                                        <button className="btn btn-block btn-info btn-sm text-white" onClick={() => router.push(`/drop?address=${dropDataOne.contractAddress}`)}>
                                             Show details
                                             <Icon icon="ic:twotone-info" fontSize={20} />
                                         </button>
@@ -133,7 +135,7 @@ export default function MainSection() {
                                         <ModelViewer prevURL={dropDataOne.imageURL} />
                                     </figure>
                                     <div className="card-body">
-                                        <button className="btn btn-block btn-info btn-sm text-white">
+                                        <button className="btn btn-block btn-info btn-sm text-white" onClick={() => router.push(`/drop?address=${dropDataOne.contractAddress}`)}>
                                             Show details
                                             <Icon icon="ic:twotone-info" fontSize={20} />
                                         </button>

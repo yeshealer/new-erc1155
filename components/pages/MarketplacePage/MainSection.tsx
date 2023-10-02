@@ -183,7 +183,7 @@ export default function MainSection() {
                                                     {item.price === 0 ? 'Free' : item.price} {NetworkList.find(item => item.id === chain?.id)?.currency}
                                                 </span>
                                             </div>
-                                            <button className="btn btn-block btn-info btn-sm text-white mt-3" onClick={() => router.push(`/detail/drop/${item.token}/${chain?.id}/${item.tokenID}/${item.seller}`)}>
+                                            <button className="btn btn-block btn-info btn-sm text-white mt-3" onClick={() => router.push(`/dropDetail/${item.token}/${chain?.id}/${item.tokenID}/${item.seller}`)}>
                                                 Show details
                                                 <Icon icon="ic:twotone-info" fontSize={20} />
                                             </button>
@@ -227,7 +227,7 @@ export default function MainSection() {
                                                     {item.price === 0 ? 'Free' : item.price} {NetworkList.find(item => item.id === chain?.id)?.currency}
                                                 </span>
                                             </div>
-                                            <button className="btn btn-block btn-info btn-sm text-white mt-3" onClick={() => router.push(`/detail/drop/${item.token}/${chain?.id}/${item.tokenID}/${item.seller}`)}>
+                                            <button className="btn btn-block btn-info btn-sm text-white mt-3" onClick={() => router.push(`/dropDetail/${item.token}/${chain?.id}/${item.tokenID}/${item.seller}`)}>
                                                 Show details
                                                 <Icon icon="ic:twotone-info" fontSize={20} />
                                             </button>

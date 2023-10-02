@@ -108,8 +108,9 @@ export default function MainSection() {
 
     useEffect(() => {
         if (!isConnected) return;
+        if (!details || Number(details?.network) !== chain?.id) return;
         getMainData();
-    }, [details, isConnected])
+    }, [details, isConnected, chain?.id])
 
     return (
         <Stack direction='row' alignItems='center' justifyContent='center' className="px-3">

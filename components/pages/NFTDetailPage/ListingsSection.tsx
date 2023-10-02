@@ -92,7 +92,7 @@ export default function ListingsSection({
     totalListings,
     nftData,
     availableUsers,
-    getMainData
+    getMainData,
 }: ListingsSectionProps) {
     const router = useRouter();
     const { address } = useAccount();

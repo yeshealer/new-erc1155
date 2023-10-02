@@ -66,9 +66,21 @@ export default function MainSection() {
         }
     }
 
+    const closeCreateListModal = () => {
+        if (typeof document !== 'undefined') {
+            (document.getElementById('create_list_modal') as HTMLDialogElement)?.close();
+        }
+    }
+
     const openMakeOfferModal = () => {
         if (typeof document !== 'undefined') {
             (document.getElementById('make_offer_modal') as HTMLDialogElement)?.showModal();
+        }
+    }
+
+    const closeMakeOfferModal = () => {
+        if (typeof document !== 'undefined') {
+            (document.getElementById('make_offer_modal') as HTMLDialogElement)?.close();
         }
     }
 
@@ -162,6 +174,7 @@ export default function MainSection() {
                                             sellListItemCount={sellListItemCount}
                                             setSellListItemCount={setSellListItemCount}
                                             setTokenPrice={setTokenPrice}
+                                            closeCreateListModal={closeCreateListModal}
                                         />
                                         <MakeOfferModal
                                             nftData={nftData}
@@ -169,6 +182,7 @@ export default function MainSection() {
                                             sellOfferItemCount={sellOfferItemCount}
                                             setSellOfferItemCount={setSellOfferItemCount}
                                             setTokenPrice={setTokenPrice}
+                                            closeMakeOfferModal={closeMakeOfferModal}
                                         />
                                     </>
                                 )}

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import React, { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Stack } from '@mui/material'
 import { NetworkList } from '@/constants/main'
 import { useAccount, useNetwork } from 'wagmi'
@@ -11,6 +11,7 @@ interface MakeOfferModalProps {
     setTokenPrice: Dispatch<SetStateAction<number>>
     sellOfferItemCount: number;
     setSellOfferItemCount: Dispatch<SetStateAction<number>>
+    closeMakeOfferModal: () => void
 }
 
 export default function MakeOfferModal({
@@ -18,17 +19,25 @@ export default function MakeOfferModal({
     tokenPrice,
     sellOfferItemCount,
     setSellOfferItemCount,
-    setTokenPrice
+    setTokenPrice,
+    closeMakeOfferModal
 }: MakeOfferModalProps) {
     const { chain } = useNetwork();
     const { address } = useAccount();
 
     const { handleMakeOffer } = useNFTDetail();
 
+    const [tokenPriceString, setTokenPriceString] = useState(String(tokenPrice));
+
     const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value
         setSellOfferItemCount(Number(inputValue))
     }
+
+    useEffect(() => {
+        if (!tokenPriceString) return;
+        setTokenPrice(Number(tokenPriceString))
+    }, [tokenPriceString])
 
     return (
         <dialog id="make_offer_modal" className="modal">
@@ -74,8 +83,8 @@ export default function MakeOfferModal({
                                 type="text"
                                 placeholder="Type here"
                                 className="input input-sm input-bordered w-full max-w-xs"
-                                value={tokenPrice}
-                                onChange={(event) => setTokenPrice(Number(event.target.value))}
+                                value={tokenPriceString}
+                                onChange={(event) => setTokenPriceString(event.target.value)}
                                 disabled={nftData.ownerAddress.toLocaleLowerCase() === address.toLocaleLowerCase()}
                             />
                         </Stack>
@@ -83,7 +92,10 @@ export default function MakeOfferModal({
                             <button
                                 className='btn btn-info btn-sm text-white'
                                 disabled={nftData.ownerAddress.toLocaleLowerCase() === address.toLocaleLowerCase()}
-                                onClick={() => handleMakeOffer(nftData, sellOfferItemCount, tokenPrice)}
+                                onClick={() => {
+                                    closeMakeOfferModal();
+                                    handleMakeOffer(nftData, sellOfferItemCount, tokenPrice)
+                                }}
                             >
                                 Make Offer
                             </button>

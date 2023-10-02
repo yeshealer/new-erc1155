@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import React, { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Stack } from '@mui/material'
 import { NetworkList } from '@/constants/main'
 import { useAccount, useNetwork } from 'wagmi'
@@ -11,6 +11,7 @@ interface CreateListModalProps {
     setTokenPrice: Dispatch<SetStateAction<number>>
     sellListItemCount: number;
     setSellListItemCount: Dispatch<SetStateAction<number>>
+    closeCreateListModal: () => void
 }
 
 export default function CreateListModal({
@@ -18,7 +19,8 @@ export default function CreateListModal({
     tokenPrice,
     sellListItemCount,
     setSellListItemCount,
-    setTokenPrice
+    setTokenPrice,
+    closeCreateListModal
 }: CreateListModalProps) {
 
     const { chain } = useNetwork();
@@ -26,10 +28,17 @@ export default function CreateListModal({
 
     const { handleCreateList } = useNFTDetail();
 
+    const [tokenPriceString, setTokenPriceString] = useState(String(tokenPrice));
+
     const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value
         setSellListItemCount(Number(inputValue))
     }
+
+    useEffect(() => {
+        if (!tokenPriceString) return;
+        setTokenPrice(Number(tokenPriceString))
+    }, [tokenPriceString])
 
     return (
         <dialog id="create_list_modal" className="modal">
@@ -71,13 +80,23 @@ export default function CreateListModal({
                         </Stack>
                         <Stack justifyContent='space-between' alignItems='center' direction='row' mt={1}>
                             <div className='text-sm'>Token Price</div>
-                            <input type="text" placeholder="Type here" className="input input-sm input-bordered w-full max-w-xs" value={tokenPrice} onChange={(event) => setTokenPrice(Number(event.target.value))} disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase()} />
+                            <input
+                                type="text"
+                                placeholder="Type here"
+                                className="input input-sm input-bordered w-full max-w-xs"
+                                value={tokenPriceString}
+                                onChange={(event) => setTokenPriceString(event.target.value)}
+                                disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase()}
+                            />
                         </Stack>
                         <Stack justifyContent='flex-end' mt={2}>
                             <button
                                 className='btn btn-info btn-sm text-white'
                                 disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase() || nftData.supply < sellListItemCount || sellListItemCount <= 0}
-                                onClick={() => handleCreateList(nftData, sellListItemCount, tokenPrice)}
+                                onClick={() => {
+                                    closeCreateListModal();
+                                    handleCreateList(nftData, sellListItemCount, tokenPrice)
+                                }}
                             >
                                 List {sellListItemCount} {sellListItemCount > 1 ? 'items' : 'item'}
                             </button>

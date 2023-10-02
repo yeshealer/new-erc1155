@@ -8,6 +8,8 @@ import { useAccount, useNetwork } from 'wagmi';
 import { ethers } from 'ethers';
 import { getCollectionDB } from '@/utils/polybaseHelper';
 import { useRouter } from 'next/navigation';
+import { closeSnackbar, enqueueSnackbar } from 'notistack';
+import { infoVariant } from '@/utils/stickyHelper';
 
 const useNFTDetail = () => {
     const fetaMarketAddress = process.env.FETA_MARKET_CONTRACT
@@ -121,7 +123,7 @@ const useNFTDetail = () => {
                 const handleNextAction = async () => {
                     if (!res.hash) return;
                     const result = await waitForTransaction({
-                        hash: res.hash
+                        hash: res.hash,
                     })
                     if (result.status === 'success') {
                         await fetchSaleList(nftData)
@@ -156,7 +158,9 @@ const useNFTDetail = () => {
             }).then(res => {
                 const handleNextAction = async () => {
                     if (!res.hash) return;
-                    const result = await waitForTransaction({ hash: res.hash })
+                    const result = await waitForTransaction({
+                        hash: res.hash,
+                    })
                     if (result.status === 'success') {
                         if (availableUsers && nftData) {
                             const currentId = nftData.imageURI + nftData.network + nftData.tokenId + seller
@@ -213,7 +217,9 @@ const useNFTDetail = () => {
             }).then(res => {
                 const handleNextAction = async () => {
                     if (!res.hash) return;
-                    const result = await waitForTransaction({ hash: res.hash })
+                    const result = await waitForTransaction({
+                        hash: res.hash,
+                    })
                     if (result.status === 'success') {
                         await fetchOfferList(nftData)
                     }
@@ -245,7 +251,9 @@ const useNFTDetail = () => {
                 }).then(res => {
                     const handleNextAction = async () => {
                         if (!res.hash) return;
-                        const result = await waitForTransaction({ hash: res.hash })
+                        const result = await waitForTransaction({
+                            hash: res.hash,
+                        })
                         if (result.status === 'success') {
                             if (availableUsers && nftData) {
                                 const currentId = nftData.imageURI + nftData.network + nftData.tokenId + address
@@ -310,7 +318,9 @@ const useNFTDetail = () => {
                 }).then(res => {
                     const handleNextAction = async () => {
                         if (!res.hash) return;
-                        const result = await waitForTransaction({ hash: res.hash })
+                        const result = await waitForTransaction({
+                            hash: res.hash,
+                        })
                         if (result.status === 'success') {
                             handleMainAcceptOffer();
                         }
@@ -333,6 +343,7 @@ const useNFTDetail = () => {
         if (sellListItemCount > 0 && nftData) {
             try {
                 if (tokenPrice) {
+                    const readingKey = enqueueSnackbar('Reading data', { variant: infoVariant })
                     const isApproved = await readContract({
                         address: nftData.contractAddress,
                         abi: NFTABI,
@@ -342,7 +353,9 @@ const useNFTDetail = () => {
                             fetaMarketAddress
                         ]
                     })
+                    closeSnackbar(readingKey)
                     const createListFunc = async () => {
+                        const createOfferKey = enqueueSnackbar('Creating Offer...', { variant: infoVariant })
                         await writeContract({
                             ...fetaMarketContract,
                             functionName: 'createList',
@@ -355,15 +368,19 @@ const useNFTDetail = () => {
                         }).then(res => {
                             const handleNextAction = async () => {
                                 if (!res.hash) return;
-                                const result = await waitForTransaction({ hash: res.hash })
+                                const result = await waitForTransaction({
+                                    hash: res.hash
+                                })
                                 if (result.status === 'success') {
                                     await fetchSaleList(nftData)
                                 }
+                                closeSnackbar(createOfferKey)
                             }
                             handleNextAction()
                         })
                     }
                     if (!isApproved) {
+                        const approveKey = enqueueSnackbar('Approving...', { variant: infoVariant })
                         await writeContract({
                             address: nftData.contractAddress,
                             abi: NFTABI,
@@ -375,10 +392,13 @@ const useNFTDetail = () => {
                         }).then(res => {
                             const handleNextAction = async () => {
                                 if (!res.hash) return;
-                                const result = await waitForTransaction({ hash: res.hash })
+                                const result = await waitForTransaction({
+                                    hash: res.hash,
+                                })
                                 if (result.status === 'success') {
                                     await createListFunc()
                                 }
+                                closeSnackbar(approveKey)
                             }
                             handleNextAction()
                         })
@@ -388,6 +408,7 @@ const useNFTDetail = () => {
                 }
             } catch (err) {
                 console.log(err)
+                closeSnackbar()
             }
         }
     }
@@ -400,6 +421,7 @@ const useNFTDetail = () => {
         if (sellOfferItemCount > 0 && nftData) {
             try {
                 if (tokenPrice) {
+                    const makeOfferKey = enqueueSnackbar('Making Offer...', { variant: infoVariant })
                     await writeContract({
                         ...fetaMarketContract,
                         functionName: 'makeOffer',
@@ -414,16 +436,22 @@ const useNFTDetail = () => {
                     }).then(res => {
                         const handleNextAction = async () => {
                             if (!res.hash) return;
-                            const result = await waitForTransaction({ hash: res.hash })
+                            const result = await waitForTransaction({
+                                hash: res.hash,
+                                timeout: 2_000,
+                                confirmations: 3
+                            })
                             if (result.status === 'success') {
                                 await fetchOfferList(nftData)
                             }
+                            closeSnackbar(makeOfferKey)
                         }
                         handleNextAction();
                     })
                 }
             } catch (err) {
                 console.log(err)
+                closeSnackbar()
             }
         }
     }

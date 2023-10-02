@@ -167,14 +167,17 @@ export default function MainSection() {
                                                     <img src={NetworkList.find(network => network.id === itemNetwork)?.image} width={25} height={25} draggable={false} key={itemNetwork} />
                                                 ))}
                                             </div>
-                                            <button className="btn btn-block btn-error btn-sm text-white mt-3">
+                                            <button className="btn btn-block btn-error btn-sm text-white mt-3" onClick={() => router.push(`/nft/${item.id}`)}>
                                                 Show details
                                                 <Icon icon="ic:twotone-info" fontSize={20} />
                                             </button>
                                         </div>
                                     </div>
                                 )) : (
-                                    <div></div>
+                                    <div className="alert alert-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                        <span>Currently, there are no collections available for purchase!</span>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -203,14 +206,17 @@ export default function MainSection() {
                                                 Minted on
                                                 <img src={item.networkImage} width={25} height={25} draggable={false} />
                                             </div>
-                                            <button className="btn btn-block btn-success btn-sm text-white mt-3">
+                                            <button className="btn btn-block btn-success btn-sm text-white mt-3" onClick={() => router.push(`/detail/nft/${item.contractAddress}/${item.network}/${item.tokenId}/${item.ownerAddress}`)}>
                                                 Show details
                                                 <Icon icon="ic:twotone-info" fontSize={20} />
                                             </button>
                                         </div>
                                     </div>
                                 )) : (
-                                    <div></div>
+                                    <div className="alert alert-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                        <span>Currently, there are no nfts available for purchase!</span>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -241,14 +247,17 @@ export default function MainSection() {
                                                     <img src={NetworkList.find(network => network.network === itemNetwork)?.image} width={25} draggable={false} alt='network' key={itemNetwork} />
                                                 ))}
                                             </div>
-                                            <button className="btn btn-block btn-primary btn-sm text-white mt-3">
+                                            <button className="btn btn-block btn-primary btn-sm text-white mt-3" onClick={() => router.push(`/drop?address=${item.contractAddress}`)}>
                                                 Show details
                                                 <Icon icon="ic:twotone-info" fontSize={20} />
                                             </button>
                                         </div>
                                     </div>
                                 )) : (
-                                    <div></div>
+                                    <div className="alert alert-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                        <span>Currently, there are no drops available for purchase!</span>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -284,7 +293,10 @@ export default function MainSection() {
                                         </div>
                                     </div>
                                 )) : (
-                                    <div></div>
+                                    <div className="alert alert-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                        <span>Currently, there are no available drops available for purchase!</span>
+                                    </div>
                                 )}
                             </div>
                         </div>

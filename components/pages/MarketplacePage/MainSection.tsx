@@ -10,7 +10,9 @@ import { errorVariant } from '@/utils/stickyHelper';
 import useDrop from '@/hooks/useDrop';
 import { ZERO_ADDRESS } from '@/utils/addressHelper';
 import { useAccount, useNetwork } from 'wagmi';
-import ModelViewer from '@/components/widgets/ModelViewer';
+import dynamic from 'next/dynamic';
+
+const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
 const filterData = ['All', 'Listings', 'Offers'].map(
     item => ({ label: item, value: item })

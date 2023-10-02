@@ -7,7 +7,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { switchNetwork } from '@wagmi/core'
 import Divider from '@mui/material/Divider';
 import { Icon } from "@iconify/react";
-import ModelViewer from "@/components/widgets/ModelViewer";
+import dynamic from "next/dynamic";
 import NFTDescription from "./NFTDescription";
 import Title from "./Title";
 import Tabs from "./Tabs";
@@ -16,6 +16,8 @@ import OffersSection from "./OffersSection";
 import CreateListModal from "./CreateListModal";
 import MakeOfferModal from "./MakeOfferModal";
 import useDropDetail from "@/hooks/useDropDetail";
+
+const ModelViewer = dynamic(() => import("@/components/widgets/ModelViewer"), { ssr: false });
 
 export default function MainSection() {
     const params = useParams();

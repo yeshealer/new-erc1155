@@ -427,6 +427,9 @@ const useNFTDetail = () => {
     ) => {
         if (sellOfferItemCount > 0 && nftData) {
             try {
+                if (tokenPrice === 0) {
+                    enqueueSnackbar('Price can not be zero!', { variant: warningVariant })
+                }
                 if (tokenPrice) {
                     const makeOfferKey = enqueueSnackbar('Making Offer...', { variant: infoVariant })
                     await writeContract({

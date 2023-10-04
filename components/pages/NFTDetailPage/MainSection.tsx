@@ -105,6 +105,7 @@ export default function MainSection() {
 
     useEffect(() => {
         if (!isConnected) return;
+        if (!details || Number(details?.network) !== chain?.id) return;
         getMainData();
     }, [details, isConnected])
 

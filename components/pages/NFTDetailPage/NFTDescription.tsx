@@ -42,7 +42,7 @@ export default function NFTDescription({
                 <div className="collapse-content">
                     <div className='flex items-center justify-between gap-2'>
                         <div className='badge badge-sm'>Contract address</div>
-                        <Link href={`${NetworkList.find(item => item.id === nftData.network)?.explorer}${nftData.contractAddress}`}>
+                        <Link href={`${NetworkList.find(item => item.id === nftData.network)?.explorer}${nftData.contractAddress}`} target='_block'>
                             <div className='cursor-pointer text-sky-500'>{nftData.contractAddress.slice(0, 6)}...{nftData.contractAddress.slice(-4)}</div>
                         </Link>
                     </div>

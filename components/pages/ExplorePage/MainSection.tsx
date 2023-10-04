@@ -151,7 +151,7 @@ export default function MainSection() {
                                 <div key={i} className="card card-compact w-full bg-base-100 shadow-xl">
                                     <figure className='relative bg-[#e0f2fe] py-2'>
                                         <div className="avatar">
-                                            <div className="w-24 mask mask-hexagon">
+                                            <div className="w-16 mask mask-hexagon">
                                                 <img src={`https://web3-images-api.kibalabs.com/v1/accounts/${creater.creater}/image`} alt={creater.creater} />
                                             </div>
                                         </div>

@@ -131,7 +131,7 @@ export default function MainSection() {
                                                             <Icon icon="tabler:external-link" fontSize={18} />
                                                         </button>
                                                     ) : (
-                                                        <button disabled={item.id !== chain?.id} className="btn btn-sm btn-block btn-info text-white" onClick={async () => await handleDeploy(collectionInfo, item.id)}>Deploy</button>
+                                                        <button disabled={item.id !== chain?.id || collectionInfo.wallet !== address} className="btn btn-sm btn-block btn-info text-white" onClick={async () => await handleDeploy(collectionInfo, item.id)}>Deploy</button>
                                                     )}
                                                 </div>
                                             </div>

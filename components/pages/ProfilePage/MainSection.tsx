@@ -79,7 +79,7 @@ export default function MainSection() {
             const collecterDatas: any[] = []
             for (const collecter of matchCollecter) {
                 if (getTotalSum(collecter.amount) > 0) {
-                    const baseData = matchDrop.find(item => item.id === collecter.dropId)
+                    const baseData = dropData.find(item => item.id === collecter.dropId)
                     if (baseData) {
                         const imageURL = await get3DImageLink(baseData.baseURI)
 

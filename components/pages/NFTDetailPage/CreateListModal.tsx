@@ -10,8 +10,9 @@ interface CreateListModalProps {
     tokenPrice: number
     setTokenPrice: Dispatch<SetStateAction<number>>
     sellListItemCount: number;
-    setSellListItemCount: Dispatch<SetStateAction<number>>
-    closeCreateListModal: () => void
+    setSellListItemCount: Dispatch<SetStateAction<number>>;
+    closeCreateListModal: () => void;
+    getMainData: () => void;
 }
 
 export default function CreateListModal({
@@ -20,7 +21,8 @@ export default function CreateListModal({
     sellListItemCount,
     setSellListItemCount,
     setTokenPrice,
-    closeCreateListModal
+    closeCreateListModal,
+    getMainData
 }: CreateListModalProps) {
 
     const { chain } = useNetwork();
@@ -95,7 +97,7 @@ export default function CreateListModal({
                                 disabled={nftData.ownerAddress.toLocaleLowerCase() !== address.toLocaleLowerCase() || nftData.supply < sellListItemCount || sellListItemCount <= 0}
                                 onClick={() => {
                                     closeCreateListModal();
-                                    handleCreateList(nftData, sellListItemCount, tokenPrice)
+                                    handleCreateList(getMainData, nftData, sellListItemCount, tokenPrice)
                                 }}
                             >
                                 List {sellListItemCount} {sellListItemCount > 1 ? 'items' : 'item'}

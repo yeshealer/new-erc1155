@@ -11,7 +11,8 @@ interface MakeOfferModalProps {
     setTokenPrice: Dispatch<SetStateAction<number>>
     sellOfferItemCount: number;
     setSellOfferItemCount: Dispatch<SetStateAction<number>>
-    closeMakeOfferModal: () => void
+    closeMakeOfferModal: () => void;
+    getMainData: () => void;
 }
 
 export default function MakeOfferModal({
@@ -20,7 +21,8 @@ export default function MakeOfferModal({
     sellOfferItemCount,
     setSellOfferItemCount,
     setTokenPrice,
-    closeMakeOfferModal
+    closeMakeOfferModal,
+    getMainData
 }: MakeOfferModalProps) {
     const { chain } = useNetwork();
     const { address } = useAccount();
@@ -94,7 +96,7 @@ export default function MakeOfferModal({
                                 disabled={nftData.ownerAddress.toLocaleLowerCase() === address.toLocaleLowerCase()}
                                 onClick={() => {
                                     closeMakeOfferModal();
-                                    handleMakeOffer(nftData, sellOfferItemCount, tokenPrice)
+                                    handleMakeOffer(getMainData, nftData, sellOfferItemCount, tokenPrice)
                                 }}
                             >
                                 Make Offer

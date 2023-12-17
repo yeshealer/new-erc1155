@@ -159,12 +159,12 @@ export default function ListingsSection({
                                             <TableCell style={{ width: 160 }} align="right">
                                                 {row.seller === address ? (
                                                     <div className="btn btn-info btn-sm text-white" onClick={async () => {
-                                                        await handleCancelList(row.sellId, nftData)
+                                                        await handleCancelList(getMainData, row.sellId, nftData)
                                                         setTimeout(() => {
                                                             getMainData();
                                                         }, 3000)
                                                     }}>Cancel</div>
-                                                ) : nftData.ownerAddress === address && (
+                                                ) : nftData.ownerAddress !== address && (
                                                     <div
                                                         className="btn btn-info btn-sm text-white"
                                                         onClick={() => handleBuyListToken(

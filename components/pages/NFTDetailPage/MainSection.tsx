@@ -178,6 +178,7 @@ export default function MainSection() {
                                             setSellListItemCount={setSellListItemCount}
                                             setTokenPrice={setTokenPrice}
                                             closeCreateListModal={closeCreateListModal}
+                                            getMainData={getMainData}
                                         />
                                         <MakeOfferModal
                                             nftData={nftData}
@@ -186,6 +187,7 @@ export default function MainSection() {
                                             setSellOfferItemCount={setSellOfferItemCount}
                                             setTokenPrice={setTokenPrice}
                                             closeMakeOfferModal={closeMakeOfferModal}
+                                            getMainData={getMainData}
                                         />
                                     </>
                                 )}

@@ -1,13 +1,9 @@
-import { readContract, multicall, writeContract, waitForTransaction } from '@wagmi/core'
-import FetaMarketABI from '@/constants/abi/FetaMarket.json'
+import { readContract } from '@wagmi/core'
 import useDrop from './useDrop'
 import { DetailsType } from '@/constants/type'
-import { useAccount } from 'wagmi'
 import DropABI from '@/constants/abi/Drop.json'
 
 const useDropDetail = () => {
-    const fetaMarketAddress = process.env.FETA_MARKET_CONTRACT
-
     const {
         getDropData,
         getCollecterData

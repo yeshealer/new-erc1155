@@ -100,8 +100,7 @@ export default function MakeOfferModal({
                                 disabled={L(collection.collecter) === L(address)}
                                 onClick={async () => {
                                     closeMakeOfferModal();
-                                    await handleMakeOffer(nftData, sellOfferItemCount, tokenPrice)
-                                    setTimeout(() => { getMainData() }, 3000)
+                                    await handleMakeOffer(getMainData, nftData, sellOfferItemCount, tokenPrice)
                                 }}
                             >
                                 Make Offer

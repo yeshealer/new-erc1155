@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { getCollectionDB } from '@/utils/polybaseHelper';
 import { useRouter } from 'next/navigation';
 import { closeSnackbar, enqueueSnackbar } from 'notistack';
-import { infoVariant, warningVariant } from '@/utils/stickyHelper';
+import { infoVariant, successVariant, warningVariant } from '@/utils/stickyHelper';
 
 const useNFTDetail = () => {
     const fetaMarketAddress = process.env.FETA_MARKET_CONTRACT
@@ -113,7 +113,7 @@ const useNFTDetail = () => {
         return listInfo.filter(item => !item?.isAccepted)
     }
 
-    const handleCancelList = async (sellId: string, nftData: any) => {
+    const handleCancelList = async (getMainData: () => void, sellId: string, nftData: any) => {
         try {
             const cancelKey = enqueueSnackbar('Cancelling list...', { variant: infoVariant })
             await writeContract({
@@ -128,6 +128,9 @@ const useNFTDetail = () => {
                     })
                     if (result.status === 'success') {
                         await fetchSaleList(nftData)
+                        closeSnackbar(cancelKey)
+                        enqueueSnackbar('Listing has been cancelled successfully!', { variant: successVariant })
+                        getMainData()
                     }
                 }
                 handleNextAction()
@@ -210,8 +213,9 @@ const useNFTDetail = () => {
         }
     }
 
-    const handleCancelOffer = async (offerId: string, nftData: any) => {
+    const handleCancelOffer = async (getMainData: () => void, offerId: string, nftData: any) => {
         try {
+            const cancelloffer = enqueueSnackbar('Cancelling Offer...', { variant: infoVariant })
             await writeContract({
                 ...fetaMarketContract,
                 functionName: 'cancelOffer',
@@ -224,6 +228,9 @@ const useNFTDetail = () => {
                     })
                     if (result.status === 'success') {
                         await fetchOfferList(nftData)
+                        closeSnackbar(cancelloffer)
+                        enqueueSnackbar('Offer has been cancelled successfully!', { variant: successVariant })
+                        getMainData();
                     }
                 }
                 handleNextAction()
@@ -338,6 +345,7 @@ const useNFTDetail = () => {
     }
 
     const handleCreateList = async (
+        getMainData: () => void,
         nftData: any,
         sellListItemCount: number,
         tokenPrice: number,
@@ -350,7 +358,7 @@ const useNFTDetail = () => {
                     enqueueSnackbar('Price can not be zero!', { variant: warningVariant })
                 }
                 if (tokenPrice) {
-                    const readingKey = enqueueSnackbar('Reading data', { variant: infoVariant })
+                    enqueueSnackbar('Reading data', { variant: infoVariant })
                     const isApproved = await readContract({
                         address: nftData.contractAddress,
                         abi: NFTABI,
@@ -360,7 +368,6 @@ const useNFTDetail = () => {
                             fetaMarketAddress
                         ]
                     })
-                    closeSnackbar(readingKey)
                     const createListFunc = async () => {
                         const createOfferKey = enqueueSnackbar('Creating Offer...', { variant: infoVariant })
                         await writeContract({
@@ -380,8 +387,10 @@ const useNFTDetail = () => {
                                 })
                                 if (result.status === 'success') {
                                     await fetchSaleList(nftData)
+                                    closeSnackbar(createOfferKey)
+                                    enqueueSnackbar(`${sellListItemCount} NFTs listed successfully`, { variant: successVariant })
+                                    getMainData();
                                 }
-                                closeSnackbar(createOfferKey)
                             }
                             handleNextAction()
                         })
@@ -421,6 +430,7 @@ const useNFTDetail = () => {
     }
 
     const handleMakeOffer = async (
+        getMainData: () => void,
         nftData: any,
         sellOfferItemCount: number,
         tokenPrice: number
@@ -448,13 +458,13 @@ const useNFTDetail = () => {
                             if (!res.hash) return;
                             const result = await waitForTransaction({
                                 hash: res.hash,
-                                timeout: 2_000,
-                                confirmations: 3
                             })
                             if (result.status === 'success') {
                                 await fetchOfferList(nftData)
+                                closeSnackbar(makeOfferKey)
+                                enqueueSnackbar(`Offered ${sellOfferItemCount} NFTs successfully`, { variant: successVariant })
+                                getMainData();
                             }
-                            closeSnackbar(makeOfferKey)
                         }
                         handleNextAction();
                     })

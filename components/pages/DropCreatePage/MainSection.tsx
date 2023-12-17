@@ -92,6 +92,7 @@ export default function MainSection() {
             setIsMinting(true);
             const duration = dropDetail.duration * (dateData.find(({ value }) => value === dropDetail.durationUnit)?.time || 0);
             await createDrop(dropDetail, tokenURI, price, duration, true, setIsMinting)
+            setSelectedMetaDatas(metaDataOptions)
         } catch (err) {
             console.log(err)
             setIsUploading(false)

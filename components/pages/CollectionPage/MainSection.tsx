@@ -7,7 +7,6 @@ import CryptoJS from 'crypto-js'
 // ** UI module imports
 import { Icon } from "@iconify/react";
 import { useSnackbar } from 'notistack';
-import CircularProgress from '@mui/material/CircularProgress';
 import Stack from "@mui/material/Stack";
 // ** constants & style imports
 import { IconButton, Button } from "@/components/globalstyle";

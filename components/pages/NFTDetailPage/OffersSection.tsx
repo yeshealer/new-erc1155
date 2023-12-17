@@ -160,7 +160,8 @@ export default function OffersSection({
                                                     <div
                                                         className="btn btn-info btn-sm text-white"
                                                         onClick={() => handleCancelOffer(
-                                                            row.sellId,
+                                                            getMainData,
+                                                            row.offerId,
                                                             nftData
                                                         )}
                                                     >

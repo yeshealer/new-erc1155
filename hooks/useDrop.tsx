@@ -10,7 +10,9 @@ import useIPFS from './useIPFS'
 import DropABI from '@/constants/abi/Drop.json'
 import FetaMarketABI from '@/constants/abi/FetaMarket.json'
 import useNetwork from './useNetwork'
-import { useString } from './useString'
+import { useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack';
+import { successVariant } from '@/utils/stickyHelper'
 
 export default function useDrop() {
     const dropFactoryAddress = process.env.DROP_FACTORY_CONTRACT as `0x${string}`
@@ -25,6 +27,8 @@ export default function useDrop() {
     const { address } = useAccount();
     const { chain } = useNetworkInfo();
     const { getNetworkIndex } = useNetwork();
+    const router = useRouter();
+    const { enqueueSnackbar } = useSnackbar();
 
     const dropDB = getDropDB();
     const {
@@ -67,7 +71,7 @@ export default function useDrop() {
     }
 
     const createDrop = async (dropDetail: DropDetailTypes, tokenURI: string, price: number, duration: number, isNew: boolean, setIsMinting: Dispatch<SetStateAction<boolean>>, newInfo?: any) => {
-        if (!dropDetail || !tokenURI || price < 0 || !duration) return;
+        if (!dropDetail || !tokenURI || price < 0 || !duration) return false;
         const bigPrice = price === 0 ? 0 : ethers.parseEther(price.toString())
         const startTimestamp = Date.now()
         const endTimestamp = startTimestamp + duration * 1000
@@ -92,7 +96,7 @@ export default function useDrop() {
                 ],
             ]
         }).then(async (res) => {
-            if (!res.hash) return;
+            if (!res.hash) return false;
             const txnHash = res.hash;
             const result = await waitForTransaction({ hash: txnHash });
             if (result.status === 'success') {
@@ -105,6 +109,7 @@ export default function useDrop() {
         }).catch((err) => {
             console.log(err)
             setIsMinting(false)
+            return false
         })
     }
 
@@ -116,8 +121,6 @@ export default function useDrop() {
             newNetwork.push(NetworkList.find(item => item.id === chain?.id)?.network)
             const newMaxEditions = newInfo.newMaxEdition
             newMaxEditions[getNetworkIndex(chain?.id)] = supply
-
-            console.log(newNetwork, newMaxEditions)
 
             await dropDatabase.record(id).call('updateNetwork', [newNetwork])
             await dropDatabase.record(id).call('updateMaxEdition', [newMaxEditions])
@@ -164,6 +167,8 @@ export default function useDrop() {
                 [0, 0, 0],
                 [],
             ]);
+            router.push(`/drop?address=${dropContractAddress[dropContractAddress.length - 1]}`)
+            enqueueSnackbar("Created drop successfully!", { variant: successVariant })
             setIsMinting(false)
         } catch (err) {
             console.log(err)

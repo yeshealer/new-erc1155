@@ -160,7 +160,7 @@ export default function OffersSection({
                                                     <div
                                                         className="btn btn-info btn-sm text-white"
                                                         onClick={async () => {
-                                                            await handleCancelOffer(row.sellId, nftData)
+                                                            await handleCancelOffer(getMainData, row.sellId, nftData)
                                                             setTimeout(() => {
                                                                 getMainData();
                                                             }, 3000)

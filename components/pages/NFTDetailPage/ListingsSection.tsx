@@ -104,7 +104,6 @@ export default function ListingsSection({
 
     const [limit, setLimit] = useState(10);
     const [page, setPage] = useState(0);
-    console.log(totalListings)
 
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * limit - totalListings.length) : 0;
@@ -158,8 +157,8 @@ export default function ListingsSection({
                                             </TableCell>
                                             <TableCell style={{ width: 160 }} align="right">
                                                 {row.seller === address ? (
-                                                    <div className="btn btn-info btn-sm text-white" onClick={() => handleCancelList(row.sellId, nftData)}>Cancel</div>
-                                                ) : nftData.ownerAddress === address && (
+                                                    <div className="btn btn-info btn-sm text-white" onClick={() => handleCancelList(getMainData, row.sellId, nftData)}>Cancel</div>
+                                                ) : nftData.ownerAddress !== address && (
                                                     <div
                                                         className="btn btn-info btn-sm text-white"
                                                         onClick={() => handleBuyListToken(

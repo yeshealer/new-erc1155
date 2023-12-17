@@ -26,9 +26,9 @@ export default function Tabs({
 
     const [activeTab, setActiveTab] = useState(0);
 
-    const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleChangeInput = (event: ChangeEvent<HTMLInputElement>, type: number) => {
         const inputValue = event.target.value
-        setSellListItemCount(Number(inputValue))
+        type === 0 ? setSellListItemCount(Number(inputValue)) : type === 1 && setSellOfferItemCount(Number(inputValue))
     }
 
     return (
@@ -61,7 +61,7 @@ export default function Tabs({
                                 type="text"
                                 className="input input-sm input-bordered max-w-[100px]"
                                 value={sellListItemCount}
-                                onChange={(event) => handleChangeInput(event)}
+                                onChange={(event) => handleChangeInput(event, 0)}
                             />
                             <button
                                 className="btn btn-sm btn-info text-white"
@@ -96,7 +96,7 @@ export default function Tabs({
                                 type="text"
                                 className="input input-sm input-bordered max-w-[100px]"
                                 value={sellOfferItemCount}
-                                onChange={(event) => handleChangeInput(event)}
+                                onChange={(event) => handleChangeInput(event, 1)}
                             />
                             <button
                                 className="btn btn-sm btn-info text-white"

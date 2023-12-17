@@ -100,8 +100,7 @@ export default function CreateListModal({
                                 disabled={L(collection.collecter) !== L(address) || collection.amount.reduce((acc: number, cur: number) => { return acc + cur }, 0) < sellListItemCount || sellListItemCount <= 0}
                                 onClick={async () => {
                                     closeCreateListModal();
-                                    await handleCreateList(nftData, sellListItemCount, tokenPrice, true, collection)
-                                    setTimeout(() => { getMainData() }, 3000)
+                                    await handleCreateList(getMainData, nftData, sellListItemCount, tokenPrice, true, collection)
                                 }}
                             >
                                 List {sellListItemCount} {sellListItemCount > 1 ? 'items' : 'item'}

@@ -166,26 +166,29 @@ export default function MainSection() {
                                 </select>
                             </div>
                         </div>
-                        <div className="flex flex-col lg:flex-row items-center justify-between gap-5 lg:gap-10 mt-5">
-                            <div className="w-full">
-                                <span className="badge badge-info text-white">Recipient Address *</span>
-                                <input
-                                    type="text"
-                                    placeholder="Enter Address"
-                                    className="input input-bordered input-info w-full mt-3"
-                                    value={recipient ? recipient : ''}
-                                    onChange={(e) => { setRecipient(e.target.value); }}
-                                />
-                            </div>
-                            <div className="w-full">
-                                <span className="badge badge-info text-white">Percentage (%) *</span>
-                                <input
-                                    type="number"
-                                    placeholder="0.00"
-                                    className="input input-bordered input-info w-full mt-3"
-                                    value={percentage ? percentage : ''}
-                                    onChange={(e) => { setPercentage(e.target.value); }}
-                                />
+                        <div className="border border-sky-400 mt-5 rounded-xl p-2 relative pt-4">
+                            <span className="badge badge-info text-white absolute -top-2.5 left-2">Royalties</span>
+                            <div className="flex flex-col lg:flex-row items-center justify-between gap-5 lg:gap-10">
+                                <div className="w-full">
+                                    <span className="badge badge-info text-white">Recipient Address *</span>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Address"
+                                        className="input input-bordered input-info w-full mt-3"
+                                        value={recipient ? recipient : ''}
+                                        onChange={(e) => { setRecipient(e.target.value); }}
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <span className="badge badge-info text-white">Percentage (%) *</span>
+                                    <input
+                                        type="number"
+                                        placeholder="0.00"
+                                        className="input input-bordered input-info w-full mt-3"
+                                        value={percentage ? percentage : ''}
+                                        onChange={(e) => { setPercentage(e.target.value); }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

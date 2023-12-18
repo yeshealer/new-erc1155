@@ -65,6 +65,7 @@ export default function MainSection() {
                 ]);
                 setIsSaving(false)
                 enqueueSnackbar("Saved collection successfully!", { variant: successVariant });
+                router.push('/create')
             }
         } catch (err: any) {
             console.log(err);
